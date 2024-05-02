@@ -11,7 +11,7 @@
  * @license   ePay Payment Solutions
  */
 
-var BamboraOnlineClassicPaymentWindow = BamboraOnlineClassicPaymentWindow ||
+var EpayPaymentWindow = EpayPaymentWindow ||
     (function () {
         var _epayArgsJson = {};
         return {
@@ -28,7 +28,7 @@ var isPaymentWindowReady = false;
 var timerOpenWindow;
 
 function PaymentWindowReady() {
-    paymentwindow = new PaymentWindow(BamboraOnlineClassicPaymentWindow.getJsonData());
+    paymentwindow = new PaymentWindow(EpayPaymentWindow.getJsonData());
 
     isPaymentWindowReady = true;
 }

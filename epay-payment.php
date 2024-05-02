@@ -3,7 +3,7 @@
  * Plugin Name: ePay Payment Solutions
  * Plugin URI: https://www.epay.dk
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.4
+ * Version: 6.0.5
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
  * Text Domain: epay-payment
@@ -15,7 +15,7 @@
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.4' );
+define( 'EPAYCLASSIC_VERSION', '6.0.5' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -1396,7 +1396,7 @@ function init_epay_payment() {
 
 				$html = '<div class="boclassic-info">';
 				if ( isset( $card_group_id ) && $card_group_id != '-1' ) {
-					$html .= '<img class="boclassic-paymenttype-img" src="https://d25dqh6gpkyuw6.cloudfront.net/paymentlogos/external/' . $card_group_id . '.png" alt="' . $card_name . '" title="' . $card_name . '" />';
+					$html .= '<img class="boclassic-paymenttype-img" src="https://cdn.epay.eu/paymentlogos/external/' . $card_group_id . '.png" alt="' . $card_name . '" title="' . $card_name . '" />';
 				}
 				$html .= '<div class="boclassic-transactionid">';
 				$html .= '<p>' . __( 'Transaction ID', 'epay-payment' ) . '</p>';
@@ -1432,7 +1432,7 @@ function init_epay_payment() {
 						if ( $canCaptureRefundDelete ) {
 							$html .= '<p>' . $currency . '</p>';
 							$html .= '<input type="text" value="' . $available_for_capture . '" id="boclassic-capture-amount" class="boclassic-amount" name="boclassic-amount" />';
-							$html .= '<input id="boclassic-capture-submit" class="button capture" name="boclassic-capture" type="submit" value="' . __( 'Capture', 'epay-payment' ) . '" />';
+							$html .= '<input id="epay-capture-submit" class="button capture" name="boclassic-capture" type="submit" value="' . __( 'Capture', 'epay-payment' ) . '" />';
 						} else {
 							$html .= __( 'Your role cannot capture or delete the payment', 'epay-payment' );
 						}
@@ -1442,7 +1442,7 @@ function init_epay_payment() {
 							$html .= '<input type="hidden" id="boclassic-delete-message" name="boclassic-delete-message" value="' . __( 'Are you sure you want to delete the payment?', 'epay-payment' ) . '" />';
 							$html .= '<div class="boclassic-action">';
 							if ( $canCaptureRefundDelete ) {
-								$html .= '<input id="boclassic-delete-submit" class="button delete" name="boclassic-delete" type="submit" value="' . __( 'Delete', 'epay-payment' ) . '" />';
+								$html .= '<input id="epay-delete-submit" class="button delete" name="boclassic-delete" type="submit" value="' . __( 'Delete', 'epay-payment' ) . '" />';
 							}
 							$html .= '</div>';
 						}
@@ -1452,7 +1452,7 @@ function init_epay_payment() {
 						$html .= '<p>' . $currency . '</p>';
 						$html .= '<input type="text" value="' . $total_captured . '" id="boclassic-refund-amount" class="boclassic-amount" name="boclassic-amount" />';
 						if ( $canCaptureRefundDelete ) {
-							$html .= '<input id="boclassic-refund-submit" class="button refund" name="boclassic-refund" type="submit" value="' . __( 'Refund', 'epay-payment' ) . '" />';
+							$html .= '<input id="epay-refund-submit" class="button refund" name="boclassic-refund" type="submit" value="' . __( 'Refund', 'epay-payment' ) . '" />';
 						}
 						$html .= '</div>';
 						$html .= '<br />';
@@ -1514,7 +1514,7 @@ function init_epay_payment() {
 
 		public function module_check( $order_id ) {
 			$order          = wc_get_order( $order_id );
-			$payment_method = $order->get_meta( '_payment_method', true );
+            $payment_method = $order->get_payment_method();
 
 			return $this->id === $payment_method;
 		}

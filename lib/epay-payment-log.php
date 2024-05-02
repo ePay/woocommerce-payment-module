@@ -13,7 +13,7 @@
  */
 
 /**
- * Bambora Online Checkout Log
+ * ePay Online Checkout Log
  */
 class Epay_Payment_Log {
 

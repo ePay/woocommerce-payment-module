@@ -43,7 +43,7 @@ msgid "ePay Payment Solutions Subscription could not be canceled - %s"
 msgstr "ePay Payment Solutions abonnement kunne ikke slettes - %s"
 
 msgid "ePay Payment Solutions Subscription ID was not found"
-msgstr "Bambora Online Checkout abonnements id blev ikke fundet"
+msgstr "ePay Payment Solutions abonnements id blev ikke fundet"
 
 #, php-format
 msgid ""

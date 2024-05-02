@@ -209,7 +209,7 @@ class Epay_Payment_Helper {
 	}
 
 	/**
-	 * get the Bambora Online Classic Transaction id from the order
+	 * get the ePay Payment Solutions Transaction id from the order
 	 *
 	 * @param WC_Order $order
 	 *
@@ -328,7 +328,7 @@ class Epay_Payment_Helper {
 			)
 		);
 		$html .= sprintf(
-			'<script type="text/javascript" charset="UTF-8" defer>BamboraOnlineClassicPaymentWindow.init(%s)</script>',
+			'<script type="text/javascript" charset="UTF-8" defer>EpayPaymentWindow.init(%s)</script>',
 			$json_data
 		);
 		$html .= '<script type="text/javascript" src="https://ssl.ditonlinebetalingssystem.dk/integration/ewindow/paymentwindow.js" charset="UTF-8" defer></script>';
@@ -417,7 +417,7 @@ class Epay_Payment_Helper {
 	 * @return string
 	 */
 	public static function getWPMLOrderLanguage( WC_Order $order ) {
-		return $order->get_meta( 'wpml_language', true );
+	    return $order->get_meta( 'wpml_language', true );
 	}
 
 	/**
@@ -472,7 +472,7 @@ class Epay_Payment_Helper {
 	}
 
 	/**
-	 * Return the Bambora Online Classic instance
+	 * Return the ePay Payment instance
 	 *
 	 * @return Epay_Payment
 	 */
