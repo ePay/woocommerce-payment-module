@@ -237,7 +237,7 @@ function init_epay_payment() {
 
 			// Fix for load of Jquery time!
 			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'epay_payment_admin', WP_PLUGIN_URL . '/' . plugin_basename( dirname( __FILE__ ) ) . '/scripts/epay-payment-admin.js' );
+			wp_enqueue_script( 'epay_payment_admin', plugins_url( 'epay-payment/scripts/epay-payment-admin.js') );
 		}
 
 		/**
