@@ -3,7 +3,7 @@
  * Plugin Name: ePay Payment Solutions
  * Plugin URI: https://www.epay.dk
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.5
+ * Version: 6.0.6
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
  * Text Domain: epay-payment
@@ -15,7 +15,7 @@
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.5' );
+define( 'EPAYCLASSIC_VERSION', '6.0.6' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
