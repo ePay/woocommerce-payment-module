@@ -51,6 +51,9 @@ With ePay Payment for WooCommerce, you are able to integrate the ePay payment wi
 
 == Changelog ==
 
+= 6.0.7 =
+* 
+
 = 6.0.6 =
 * WP_PLUGIN_URL -> plugins_url
 
