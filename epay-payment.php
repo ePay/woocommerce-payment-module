@@ -1271,8 +1271,12 @@ function init_epay_payment() {
 		public function epay_payment_meta_boxes() {
 			global $post;
 			if ( ! isset( $post ) ) { //HPOS might be used
-				$order    = wc_get_order();
-				$order_id = $order->get_id();
+				$order = wc_get_order();
+                
+                if($order) {
+				    $order_id = $order->get_id();
+                }
+
 			} else {
 				$order_id = $post->ID;
 				$order    = wc_get_order( $order_id );
