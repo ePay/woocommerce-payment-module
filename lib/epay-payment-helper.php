@@ -184,13 +184,19 @@ class Epay_Payment_Helper {
 		);
 
 		//For Legacy
-		if ( empty( $epay_subscription_id ) ) {
-			$parent_order_id         = $subscription->get_parent_id();
-			$parent_order            = wc_get_order( $parent_order_id );
-			$epay_subscription_id = $parent_order->get_meta(
-				self::EPAY_PAYMENT_SUBSCRIPTION_ID_LEGACY,
-				true
-			);
+		if ( empty( $epay_subscription_id )) {
+            
+            $parent_order_id = $subscription->get_parent_id();
+            
+            if($parent_order_id > 0)
+            {
+                $parent_order = wc_get_order( $parent_order_id );
+			    $epay_subscription_id = $parent_order->get_meta(
+				    self::EPAY_PAYMENT_SUBSCRIPTION_ID_LEGACY,
+				    true
+                );
+            }
+
 			if ( ! empty( $epay_subscription_id ) ) {
 				//Transform Legacy to new standards
 				$subscription->update_meta_data(
