@@ -2,12 +2,12 @@
 Contributors: ePay Payment Solutions
 Tags: woocommerce, woo commerce, payment, payment gateway, gateway, subscription, subscriptions, epay, integration, woocommerce epay, psp
 Requires at least: 4.0.0
-Tested up to: 6.5.2
-Stable tag: 6.0.6
+Tested up to: 6.5.5
+Stable tag: 6.0.7
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 WC requires at least: 3.2
-WC tested up to: 8.2
+WC tested up to: 9.0.2
 
 Integrates ePay payment gateway into your WooCommerce installation.
 
@@ -52,7 +52,7 @@ With ePay Payment for WooCommerce, you are able to integrate the ePay payment wi
 == Changelog ==
 
 = 6.0.7 =
-* 
+* Subscription order check
 
 = 6.0.6 =
 * WP_PLUGIN_URL -> plugins_url
