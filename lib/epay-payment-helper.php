@@ -147,7 +147,7 @@ class Epay_Payment_Helper {
 	 * @return array
 	 */
 	public static function get_subscriptions_for_order( $order_id ) {
-		if ( function_exists( 'wcs_get_subscriptions_for_order' ) ) {
+        if ( function_exists( 'wcs_get_subscriptions_for_order' ) ) {
 			return wcs_get_subscriptions_for_order(
 				$order_id,
 				array( 'order_type' => 'any' )

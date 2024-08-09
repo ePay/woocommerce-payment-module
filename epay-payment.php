@@ -3,7 +3,7 @@
  * Plugin Name: ePay Payment Solutions
  * Plugin URI: https://www.epay.dk
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.8
+ * Version: 6.0.9
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
  * Text Domain: epay-payment
@@ -15,7 +15,7 @@
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.8' );
+define( 'EPAYCLASSIC_VERSION', '6.0.9' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -778,9 +778,16 @@ function init_epay_payment() {
 				$epay_args['invoice'] = $this->create_invoice( $order, $minorunits );
 			}
 
-			if ( Epay_Payment_Helper::woocommerce_subscription_plugin_is_active() && ( Epay_Payment_Helper::order_contains_subscription( $order ) || $is_request_to_change_payment_method ) ) {
+			if ( Epay_Payment_Helper::woocommerce_subscription_plugin_is_active() && ( Epay_Payment_Helper::order_contains_subscription( $order )) ) {
 				$epay_args['subscription'] = 1;
 			}
+            elseif($is_request_to_change_payment_method)
+            {
+				$epay_args['subscription'] = 2;
+                
+                $subscription = Epay_Payment_Helper::get_subscriptions_for_order($order->parent_id)[$order_id];
+                $epay_args['subscriptionid'] =  Epay_Payment_Helper::get_epay_payment_subscription_id($subscription);
+            }
 
 			if ( class_exists( 'sitepress' ) ) {
 				$md5_key = Epay_Payment_Helper::getWPMLOptionValue( 'md5key', Epay_Payment_Helper::getWPMLOrderLanguage( $order ), $this->md5key );
