@@ -18,7 +18,10 @@ class Epay_Payment_Helper {
 	const ROUND_DEFAULT = "round_default";
 	const EPAY_PAYMENT_TRANSACTION_ID_LEGACY = 'Transaction ID';
 	const EPAY_PAYMENT_SUBSCRIPTION_ID = 'epay_payment_subscription_id';
-	const EPAY_PAYMENT_SUBSCRIPTION_ID_LEGACY = 'Subscription ID';
+    
+    const EPAY_PAYMENT_BAMBORA_SUBSCRIPTION_ID = 'bambora_online_classic_subscription_id';
+    
+    const EPAY_PAYMENT_SUBSCRIPTION_ID_LEGACY = 'Subscription ID';
 	const EPAY_PAYMENT_PAYMENT_TYPE_ID = 'Payment Type ID';
 	const EPAY_PAYMENT_STATUS_MESSAGES = 'epay_payment_status_messages';
 	const EPAY_PAYMENT_STATUS_MESSAGES_KEEP_FOR_POST = 'epay_payment_status_messages_keep_for_post';
@@ -184,16 +187,38 @@ class Epay_Payment_Helper {
 		);
 
 		//For Legacy
-		if ( empty( $epay_subscription_id )) {
+        if ( empty( $epay_subscription_id )) {
+
+            $epay_subscription_id = $subscription->get_meta(
+			    self::EPAY_PAYMENT_BAMBORA_SUBSCRIPTION_ID,
+			    true
+            );
+            
+            if ( ! empty( $epay_subscription_id ) ) {
+    			//Transform Legacy to new standards
+				$subscription->update_meta_data(
+					self::EPAY_PAYMENT_SUBSCRIPTION_ID,
+					$epay_subscription_id
+				);
+
+                $subscription->delete_meta_data(
+                    self::EPAY_PAYMENT_BAMBORA_SUBSCRIPTION_ID   
+                );
+				$subscription->save();
+            }
+        }
+        
+		//For Legacy
+        if ( empty( $epay_subscription_id )) {
             
             $parent_order_id = $subscription->get_parent_id();
             
             if($parent_order_id > 0)
             {
                 $parent_order = wc_get_order( $parent_order_id );
-			    $epay_subscription_id = $parent_order->get_meta(
-				    self::EPAY_PAYMENT_SUBSCRIPTION_ID_LEGACY,
-				    true
+                $epay_subscription_id = $parent_order->get_meta(
+                    self::EPAY_PAYMENT_SUBSCRIPTION_ID_LEGACY,
+                    true
                 );
             }
 
