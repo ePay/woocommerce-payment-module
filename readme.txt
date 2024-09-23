@@ -51,6 +51,9 @@ With ePay Payment for WooCommerce, you are able to integrate the ePay payment wi
 
 == Changelog ==
 
+= 6.0.10 =
+* Ageverification
+
 = 6.0.9 =
 * Update creditcard on subscription
 

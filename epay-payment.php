@@ -15,7 +15,7 @@
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.9' );
+define( 'EPAYCLASSIC_VERSION', '6.0.10' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -58,6 +58,7 @@ function init_epay_payment() {
         private $override_subscription_need_payment;
         private $rolecapturerefunddelete;
         private $orderstatusaftercancelledpayment;
+        private $ageverificationmode;
 
 		/**
 		 * Singleton instance
@@ -162,6 +163,7 @@ function init_epay_payment() {
 			$this->override_subscription_need_payment = array_key_exists( 'overridesubscriptionneedpayment', $this->settings ) ? $this->settings['overridesubscriptionneedpayment'] : 'yes';
 			$this->rolecapturerefunddelete            = array_key_exists( 'rolecapturerefunddelete', $this->settings ) ? $this->settings['rolecapturerefunddelete'] : 'shop_manager';
             $this->orderstatusaftercancelledpayment   = array_key_exists( 'orderstatusaftercancelledpayment', $this->settings ) ? $this->settings['orderstatusaftercancelledpayment'] : Epay_Payment_Helper::STATUS_CANCELLED;
+            $this->ageverificationmode                = array_key_exists( 'ageverificationmode', $this->settings ) ? $this->settings['ageverificationmode'] : Epay_Payment_Helper::AGEVERIFICATION_DISABLED;
 		}
     
 		/**
@@ -219,6 +221,7 @@ function init_epay_payment() {
 				'enqueue_wc_epay_payment_admin_styles_and_scripts'
 			) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_wc_epay_payment_front_styles' ) );
+
 		}
 
 		/**
@@ -390,6 +393,16 @@ function init_epay_payment() {
 					'options'     => $roles_options,
 					'label'       => 'User role',
 					'default'     => 'shop_manager'
+                ),
+                'ageverificationmode'                    => array(
+					'title'       => 'Ageverification mode',
+					'type'        => 'select',
+					'description' => 'Activate Ageverification',
+					'options'     => array(
+                        Epay_Payment_Helper::AGEVERIFICATION_DISABLED => 'Disabled',
+                        Epay_Payment_Helper::AGEVERIFICATION_ENABLED_ALL => 'Enabled on all orders',
+                        Epay_Payment_Helper::AGEVERIFICATION_ENABLED_DK => 'Enabled on DK orders'
+					)
 				)
 			);
 		}
@@ -771,12 +784,25 @@ function init_epay_payment() {
 				'group'          => $this->group,
 				'language'       => Epay_Payment_Helper::get_language_code( get_locale() ),
 				'ownreceipt'     => Epay_Payment_Helper::yes_no_to_int( $this->ownreceipt ),
-				'timeout'        => '60',
+				'timeout'        => '60'
 			);
 
-			if ( ! $is_request_to_change_payment_method ) {
-				$epay_args['invoice'] = $this->create_invoice( $order, $minorunits );
-			}
+            if($this->ageverificationmode == Epay_Payment_Helper::AGEVERIFICATION_ENABLED_ALL || ($this->ageverificationmode == Epay_Payment_Helper::AGEVERIFICATION_ENABLED_DK && $order->get_shipping_country() == "DK"))
+            {
+                $minimumuserage = Epay_Payment_Helper::get_minimumuserage($order);
+                $countryId = false;
+                
+                if($minimumuserage > 0)
+                {
+                    $epay_args['minimumuserage'] = $minimumuserage;
+                    $epay_args['ageverificationcountry'] = $order->get_shipping_country();
+                }
+                
+            }
+        
+            if ( ! $is_request_to_change_payment_method ) {
+                $epay_args['invoice'] = $this->create_invoice( $order, $minorunits );
+            }
 
 			if ( Epay_Payment_Helper::woocommerce_subscription_plugin_is_active() && ( Epay_Payment_Helper::order_contains_subscription( $order )) ) {
 				$epay_args['subscription'] = 1;
@@ -1571,7 +1597,6 @@ function init_epay_payment() {
 		}
 	} );
     */
-    
 
     function declare_cart_checkout_blocks_compatibility() {
         
@@ -1610,5 +1635,36 @@ function init_epay_payment() {
                 $payment_method_registry->register( new Epay_Payment_Blocks );
             }
         );
+    }
+
+    /*
+    * Display Age Verification Fields
+    */
+    add_action( 'woocommerce_product_options_general_product_data', 'woo_add_ageverification_select' );
+
+    function woo_add_ageverification_select()
+    {
+        return woocommerce_wp_select(
+            array(
+                'id'      => 'ageverification',
+                'label'   => __( 'Ageverification', 'woocommerce' ),
+                'options' => array(
+                    '0'  => __( 'None', 'woocommerce' ),
+                    '15' => __( '15 Years', 'woocommerce' ),
+                    '16' => __( '16 Years', 'woocommerce' ),
+                    '18' => __( '18 Years', 'woocommerce' ),
+                    '21' => __( '21 Years', 'woocommerce' )
+                )
+            )
+        );
+    }
+
+    // Save Ageverification
+    add_action( 'woocommerce_process_product_meta', 'woo_add_custom_general_fields_save' );
+
+    function woo_add_custom_general_fields_save( $post_id ){
+        $woocommerce_select = $_POST['ageverification'];
+        if( !empty( $woocommerce_select ) )
+            update_post_meta( $post_id, 'ageverification', esc_attr( $woocommerce_select ) );
     }
 }

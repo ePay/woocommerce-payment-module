@@ -30,6 +30,11 @@ class Epay_Payment_Helper {
     const STATUS_CANCELLED = 'cancelled';
     const STATUS_PENDING = 'pending';
 
+    //AgeVerfication
+    const AGEVERIFICATION_DISABLED = "ageverification_disabled";
+    const AGEVERIFICATION_ENABLED_ALL = "ageverification_enabled_all";
+    const AGEVERIFICATION_ENABLED_DK = "ageverification_enabled_dk";
+
 	/**
 	 * Returns the module header
 	 *
@@ -1082,4 +1087,24 @@ class Epay_Payment_Helper {
 			);
 		}
 	}
+
+    public static function get_minimumuserage($order)
+    {
+        $minimumuserage = 0;
+
+        $order_items = $order->get_items();
+
+        foreach ( $order_items as $cart_item )
+        {
+            $_product =  wc_get_product($cart_item['product_id']);
+            $ageverification = get_post_meta($cart_item['product_id'] , 'ageverification', true);
+
+            if($ageverification > $minimumuserage)
+            {
+                $minimumuserage = $ageverification;
+            }
+        }
+
+        return $minimumuserage;
+    }
 }
