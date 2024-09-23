@@ -394,7 +394,7 @@ function init_epay_payment() {
 					'label'       => 'User role',
 					'default'     => 'shop_manager'
                 ),
-                'ageverificationmode'                    => array(
+                'ageverificationmode'             => array(
 					'title'       => 'Ageverification mode',
 					'type'        => 'select',
 					'description' => 'Activate Ageverification',

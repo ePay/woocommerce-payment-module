@@ -49,6 +49,7 @@ With ePay Payment for WooCommerce, you are able to integrate the ePay payment wi
 
 <a href="https://woocommerce.wpguiden.dk/en/configuration">Click here for more information about **Settings**</a>
 
+
 == Changelog ==
 
 = 6.0.10 =

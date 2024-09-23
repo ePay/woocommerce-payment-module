@@ -35,6 +35,7 @@ class Epay_Payment_Helper {
     const AGEVERIFICATION_ENABLED_ALL = "ageverification_enabled_all";
     const AGEVERIFICATION_ENABLED_DK = "ageverification_enabled_dk";
 
+    
 	/**
 	 * Returns the module header
 	 *

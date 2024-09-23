@@ -39,7 +39,6 @@ final class Epay_Payment_Blocks extends AbstractPaymentMethodType {
     }
 
     public function get_payment_method_data() {
-        
         return [
             'title' => $this->gateway->title,
             'description' => $this->gateway->description,
