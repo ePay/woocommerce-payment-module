@@ -3,7 +3,7 @@
  * Plugin Name: ePay Payment Solutions
  * Plugin URI: https://www.epay.dk
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.9
+ * Version: 6.0.10
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
  * Text Domain: epay-payment
@@ -1663,8 +1663,9 @@ function init_epay_payment() {
     add_action( 'woocommerce_process_product_meta', 'woo_add_custom_general_fields_save' );
 
     function woo_add_custom_general_fields_save( $post_id ){
-        $woocommerce_select = $_POST['ageverification'];
-        if( !empty( $woocommerce_select ) )
-            update_post_meta( $post_id, 'ageverification', esc_attr( $woocommerce_select ) );
+        if( isset($_POST['ageverification']))
+        {
+            update_post_meta( $post_id, 'ageverification', esc_attr( $_POST['ageverification'] ) );       
+        }
     }
 }
