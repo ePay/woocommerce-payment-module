@@ -1098,14 +1098,47 @@ class Epay_Payment_Helper {
         foreach ( $order_items as $cart_item )
         {
             $_product =  wc_get_product($cart_item['product_id']);
-            $ageverification = get_post_meta($cart_item['product_id'] , 'ageverification', true);
+            $product_minimumuserage = get_post_meta($cart_item['product_id'] , 'ageverification', true);
 
-            if($ageverification > $minimumuserage)
+            $category_minimumuserage = 0;
+            $product_category_ids  = $_product->get_category_ids();
+
+            if($product_category_ids)
             {
-                $minimumuserage = $ageverification;
+                foreach( $product_category_ids as $category_id ) 
+                {
+                    $term = get_term_by( 'id', $category_id, 'product_cat' );
+                    $term_meta = get_term_meta($term->term_id);
+                    
+                    if(isset($term_meta['ep_category_ageverification'][0]) && $term_meta['ep_category_ageverification'][0] > $category_minimumuserage)
+                    {
+                        $category_minimumuserage = $term_meta['ep_category_ageverification'][0];
+                    }
+                }
             }
+
+            if($product_minimumuserage > $minimumuserage)
+            {
+                $minimumuserage = $product_minimumuserage;
+            }
+            elseif($category_minimumuserage > $minimumuserage)
+            {
+                $minimumuserage = $category_minimumuserage;
+            } 
         }
 
         return $minimumuserage;
+    }
+
+    public static function get_ageverification_options()
+    {
+        $options  = array(
+            '0'  => __( 'None', 'woocommerce' ),
+            '15' => __( '15 Years', 'woocommerce' ),
+            '16' => __( '16 Years', 'woocommerce' ),
+            '18' => __( '18 Years', 'woocommerce' ),
+            '21' => __( '21 Years', 'woocommerce' ));
+        
+        return $options;
     }
 }

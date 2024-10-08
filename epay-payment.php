@@ -3,7 +3,7 @@
  * Plugin Name: ePay Payment Solutions
  * Plugin URI: https://www.epay.dk
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.11
+ * Version: 6.0.12
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
  * Text Domain: epay-payment
@@ -15,7 +15,7 @@
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.11' );
+define( 'EPAYCLASSIC_VERSION', '6.0.12' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -1638,34 +1638,87 @@ function init_epay_payment() {
     }
 
     /*
-    * Display Age Verification Fields
+    * Display Age Verification Product Fields
     */
-    add_action( 'woocommerce_product_options_general_product_data', 'woo_add_ageverification_select' );
+    add_action( 'woocommerce_product_options_general_product_data', 'ep_ageverification_add_product_field' );
 
-    function woo_add_ageverification_select()
+    function ep_ageverification_add_product_field()
     {
         return woocommerce_wp_select(
             array(
                 'id'      => 'ageverification',
                 'label'   => __( 'Ageverification', 'woocommerce' ),
-                'options' => array(
-                    '0'  => __( 'None', 'woocommerce' ),
-                    '15' => __( '15 Years', 'woocommerce' ),
-                    '16' => __( '16 Years', 'woocommerce' ),
-                    '18' => __( '18 Years', 'woocommerce' ),
-                    '21' => __( '21 Years', 'woocommerce' )
-                )
+                'options' => Epay_Payment_Helper::get_ageverification_options()
             )
         );
     }
 
     // Save Ageverification
-    add_action( 'woocommerce_process_product_meta', 'woo_add_custom_general_fields_save' );
+    add_action( 'woocommerce_process_product_meta', 'save_ep_ageverification_product' );
 
-    function woo_add_custom_general_fields_save( $post_id ){
+    function save_ep_ageverification_product( $post_id ){
         if( isset($_POST['ageverification']))
         {
             update_post_meta( $post_id, 'ageverification', esc_attr( $_POST['ageverification'] ) );       
         }
+    }
+
+    /*
+    * Display Age Verification Category Fields
+    */
+    add_action('product_cat_add_form_fields', 'ep_ageverification_add_category_field', 10, 1);
+    add_action('product_cat_edit_form_fields', 'ep_ageverification_edit_category_field', 10, 1);
+    
+    //Product Cat Create page
+    function ep_ageverification_add_category_field() {
+        ?>
+        <div class="form-field">
+            <label for="ep_category_ageverification">Ageverification</label>
+            <select name="ep_category_ageverification" id="ep_category_ageverification" >
+
+            <?php
+            foreach(Epay_Payment_Helper::get_ageverification_options() AS $key => $option)
+            {
+                echo '<option value="'.$key.'" '.($key==$ep_category_ageverification ? "selected" : "").'>'.$option.'</option>';
+            }
+            ?>
+            </select>
+
+            <p class="description">Activate ageverification on category</p>
+        </div>
+        <?php
+    }
+
+    function ep_ageverification_edit_category_field($term) {
+
+        $term_id = $term->term_id;
+
+        $ep_category_ageverification = get_term_meta($term_id, 'ep_category_ageverification', true);
+        ?>
+
+        <tr class="form-field">
+            <th scope="row" valign="top"><label for="ep_category_ageverification">Ageverification</label></th>
+            <td>
+                <select name="ep_category_ageverification" id="ep_category_ageverification" >
+                <?php
+                foreach(Epay_Payment_Helper::get_ageverification_options() AS $key => $option)
+                {
+                    echo '<option value="'.$key.'" '.($key==$ep_category_ageverification ? "selected" : "").'>'.$option.'</option>';
+                }
+                ?>
+                </select>
+                <p class="description">Activate ageverification category</p>
+            </td>
+        </tr>
+        <?php
+    }
+
+    add_action('edited_product_cat', 'save_ep_ageverification_category', 10, 1);
+    add_action('create_product_cat', 'save_ep_ageverification_category', 10, 1);
+
+    // Save extra taxonomy fields callback function.
+    function save_ep_ageverification_category($term_id) {
+        $ep_category_ageverification = filter_input(INPUT_POST, 'ep_category_ageverification');
+        update_term_meta($term_id, 'ep_category_ageverification', $ep_category_ageverification);
     }
 }
