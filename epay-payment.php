@@ -3,7 +3,7 @@
  * Plugin Name: ePay Payment Solutions
  * Plugin URI: https://www.epay.dk
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.12
+ * Version: 6.0.13
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
  * Text Domain: epay-payment
@@ -15,7 +15,7 @@
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.12' );
+define( 'EPAYCLASSIC_VERSION', '6.0.13' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -927,6 +927,14 @@ function init_epay_payment() {
 				$action = 'created (Called multiple times)';
 			}
 			$order->payment_complete( $params['txnid'] );
+
+            $payment_complete_time_start = microtime(true);
+			$order->payment_complete( $params['txnid'] );
+            
+            $transaction_id = $order->get_transaction_id();
+            $payment_complete_time_end = microtime(true);
+            $payment_complete_time = $payment_complete_time_end - $payment_complete_time_start;
+			$order->add_order_note('Payment complete Done in '.round($payment_complete_time, 4).' sec - Transaction id '.$params['txnid']);
 
 			return $action;
 		}
