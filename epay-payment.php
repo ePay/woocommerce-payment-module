@@ -171,7 +171,7 @@ function init_epay_payment() {
 		 */
 		public function init_hooks() {
 			// Actions
-			add_action( 'woocommerce_api_' . strtolower( get_class() ), array(
+			add_action( 'woocommerce_api_' . strtolower( get_class( $this ) ), array(
 				$this,
 				'epay_payment_callback'
 			) );
