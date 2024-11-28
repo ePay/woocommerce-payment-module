@@ -235,19 +235,20 @@ function init_epay_payment() {
 		 * Enqueue Admin Styles and Scripts
 		 */
 		public function enqueue_wc_epay_payment_admin_styles_and_scripts() {
-			wp_register_style( 'epay_payment_admin_style', plugins_url( 'epay-payment/style/epay-payment-admin.css' ) );
+			wp_register_style( 'epay_payment_admin_style', plugins_url( '/style/epay-payment-admin.css', __FILE__ ) );
 			wp_enqueue_style( 'epay_payment_admin_style' );
 
 			// Fix for load of Jquery time!
 			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'epay_payment_admin', plugins_url( 'epay-payment/scripts/epay-payment-admin.js') );
+			wp_enqueue_script( 'epay_payment_admin', plugins_url( '/scripts/epay-payment-admin.js', __FILE__ ) );
 		}
 
 		/**
 		 * Enqueue Frontend Styles and Scripts
 		 */
 		public function enqueue_wc_epay_payment_front_styles() {
-			wp_register_style( 'epay_payment_front_style', plugins_url( 'epay-payment/style/epay-payment-front.css' ) );
+			// wp_register_style( 'epay_payment_front_style', plugins_url( 'epay-payment/style/epay-payment-front.css' ) );
+			wp_register_style( 'epay_payment_front_style', plugins_url( '/style/epay-payment-front.css', __FILE__ ) );
 			wp_enqueue_style( 'epay_payment_front_style' );
 		}
 
