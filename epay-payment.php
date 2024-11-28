@@ -1580,11 +1580,42 @@ function init_epay_payment() {
 			$icon_html = '<img src="' . $this->icon . '" alt="' . $this->method_title . '" width="50"  />';
 
 			return apply_filters( 'woocommerce_gateway_icon', $icon_html, $this->id );
-		}
+        }
+
+        public static function load_subgates($methods) {
+            require_once( EPAYCLASSIC_PATH .'/lib/subgates/subgate.php' );
+
+            $subgates = self::get_subgates();
+
+            foreach($subgates AS $file_name => $class_name) {
+                $file_path = EPAYCLASSIC_PATH . '/lib/subgates/' .$file_name. '.php';
+
+                if( file_exists( $file_path ) ) {
+                    require_once($file_path);
+                    $methods[] = $class_name;
+                }
+            }
+
+            return $methods;
+        }
+
+        public static function get_subgates() {
+            return [
+                "mobilepay" => 'Epay_MobilePay',
+                "applepay" => 'Epay_ApplePay'
+            ];
+        }
+
 	}
 
-	add_filter( 'woocommerce_payment_gateways', 'add_epay_payment_woocommerce' );
-	Epay_Payment::get_instance()->init_hooks();
+    function WC_EP(): Epay_Payment {
+        return Epay_Payment::get_instance();
+    }
+
+    WC_EP();
+    WC_EP()->init_hooks();
+	// Epay_Payment::get_instance()->init_hooks();
+
 
 	/**
 	 * Add the Gateway to WooCommerce
@@ -1592,8 +1623,10 @@ function init_epay_payment() {
 	function add_epay_payment_woocommerce( $methods ) {
 		$methods[] = 'Epay_Payment';
 
-		return $methods;
+		return Epay_Payment::load_subgates($methods);
 	}
+
+	add_filter( 'woocommerce_payment_gateways', 'add_epay_payment_woocommerce' );
 
 	$plugin_dir = basename( dirname( __FILE__ ) );
 	load_plugin_textdomain( 'epay-payment', false, $plugin_dir . '/languages' );
