@@ -1625,8 +1625,8 @@ function init_epay_payment() {
                 "applepay" => 'Epay_ApplePay',
                 "viabill" => 'Epay_ViaBill',
                 "paypal" => 'Epay_PayPal',
-                "klarna" => 'Epay_Klarna',
-                "ideal" => 'Epay_iDEAL',
+                // "klarna" => 'Epay_Klarna',
+                // "ideal" => 'Epay_iDEAL',
             ];
         }
 
