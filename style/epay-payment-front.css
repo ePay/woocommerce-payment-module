@@ -1,3 +1,13 @@
 #boclassic_card_logos {
     display: inline-block;
 }
+
+.blocks-woocommerce-epay-inner {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.blocks-woocommerce-epay-inner__icons {
+    margin-left: auto;
+}
