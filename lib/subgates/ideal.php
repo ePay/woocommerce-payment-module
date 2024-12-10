@@ -1,22 +1,21 @@
 <?php
-class Epay_MobilePay extends subgate
+class Epay_iDEAL extends subgate
 {
     public function __construct()
     {
         parent::__construct();
 
-        $this->id = "epay_mobilepay";
-        $this->paymenttype = 29;
-		$this->icon = WP_PLUGIN_URL . '/epay-payment/images/mobilepay.svg';
+        $this->id = "epay_ideal";
+        $this->paymenttype = 25;
+		$this->icon = WP_PLUGIN_URL . '/epay-payment/images/ideal.svg';
         // $this->enabled = "yes";
         
-        $this->method_title = "ePay - MobilePay";
+        $this->method_title = "ePay - iDEAL";
 
         $this->setup();
 
         $this->title = $this->get_settings( 'title' );
         $this->description = $this->get_settings( 'description' );
-
     }
 
     public function init_form_fields()

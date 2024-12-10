@@ -5,11 +5,21 @@ use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodTyp
 final class Epay_Payment_Blocks extends AbstractPaymentMethodType {
 
     private $gateway;
-    protected $name = 'Epay_Payment';// your payment gateway name
+    // protected $name = 'Epay_Payment';// your payment gateway name
+
+    public function __construct($payment_gateway)
+    {
+        // var_dump($payment_gateway);
+        // echo get_class($payment_gateway);
+        // echo "<br><br>";
+        // die('hard');
+        $this->name = get_class($payment_gateway);
+        $this->gateway = $payment_gateway;
+    }
 
     public function initialize() {
-        $this->settings = get_option( 'woocommerce_my_custom_gateway_settings', [] );
-        $this->gateway = new Epay_Payment();
+        // $this->settings = get_option( 'woocommerce_my_custom_gateway_settings', [] );
+        // $this->gateway = new Epay_Payment();
     }
 
     public function is_active() {
@@ -43,6 +53,7 @@ final class Epay_Payment_Blocks extends AbstractPaymentMethodType {
             'title' => $this->gateway->title,
             'description' => $this->gateway->description,
             'supports' => $this->gateway->supports,
+            'icon' => $this->gateway->icon,
         ];
     }
 

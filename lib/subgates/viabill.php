@@ -1,22 +1,22 @@
 <?php
-class Epay_MobilePay extends subgate
+class Epay_ViaBill extends subgate
 {
     public function __construct()
     {
         parent::__construct();
 
-        $this->id = "epay_mobilepay";
-        $this->paymenttype = 29;
-		$this->icon = WP_PLUGIN_URL . '/epay-payment/images/mobilepay.svg';
+        $this->id = "epay_viabill";
+        $this->paymentcollection = 7;
+        $this->paymenttype = 23;
+		$this->icon = WP_PLUGIN_URL . '/epay-payment/images/viabill.svg';
         // $this->enabled = "yes";
         
-        $this->method_title = "ePay - MobilePay";
+        $this->method_title = "ePay - ViaBill";
 
         $this->setup();
 
         $this->title = $this->get_settings( 'title' );
         $this->description = $this->get_settings( 'description' );
-
     }
 
     public function init_form_fields()

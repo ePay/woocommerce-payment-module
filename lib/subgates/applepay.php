@@ -6,15 +6,16 @@ class Epay_ApplePay extends subgate
         parent::__construct();
 
         $this->id = "epay_applepay";
+        $this->paymentcollection = 8;
+		$this->icon = WP_PLUGIN_URL . '/epay-payment/images/applepay.svg';
         // $this->enabled = "yes";
         
         $this->method_title = "ePay - ApplePay";
 
         $this->setup();
 
-        $this->title = "ePay - ApplePay";
-        $this->description = "ePay - ApplePay description";
-
+        $this->title = $this->get_settings( 'title' );
+        $this->description = $this->get_settings( 'description' );
     }
 
     public function init_form_fields()

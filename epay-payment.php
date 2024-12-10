@@ -3,10 +3,11 @@
  * Plugin Name: ePay Payment Solutions
  * Plugin URI: https://www.epay.dk
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.13
+ * Version: 6.0.14
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
  * Text Domain: epay-payment
+ * Requires Plugins: woocommerce
  *
  * @author ePay Payment Solutions
  * @package epay_payment
@@ -15,7 +16,7 @@
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.13' );
+define( 'EPAYCLASSIC_VERSION', '6.0.14' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -59,6 +60,8 @@ function init_epay_payment() {
         private $rolecapturerefunddelete;
         private $orderstatusaftercancelledpayment;
         private $ageverificationmode;
+        protected $paymenttype;
+        protected $paymentcollection;
 
 		/**
 		 * Singleton instance
@@ -98,6 +101,8 @@ function init_epay_payment() {
 			$this->method_description = 'ePay Payment Solutions enables easy and secure payments on your shop';
 			$this->icon               = WP_PLUGIN_URL . '/' . plugin_basename( dirname( __FILE__ ) ) . '/epay-logo.svg';
 			$this->has_fields         = false;
+            $this->paymenttype        = false;
+            $this->paymentcollection  = false;
 
 
 			$this->supports = array(
@@ -166,6 +171,14 @@ function init_epay_payment() {
             $this->ageverificationmode                = array_key_exists( 'ageverificationmode', $this->settings ) ? $this->settings['ageverificationmode'] : Epay_Payment_Helper::AGEVERIFICATION_DISABLED;
 		}
     
+        public function get_settings($key)
+        {
+            if(isset($this->settings[$key]))
+            {
+                return $this->settings[$key];
+            }
+        }
+   
 		/**
 		 * Init hooks
 		 */
@@ -413,7 +426,7 @@ function init_epay_payment() {
 		public function admin_options() {
 			$version = EPAYCLASSIC_VERSION;
 
-			$html = "<h3>ePay Payment Solutions v{$version}</h3>";
+			$html = "<h3>{$this->method_title}  v{$version}</h3>";
 			$html .= Epay_Payment_Helper::create_admin_debug_section();
 			$html .= '<h3 class="wc-settings-sub-title">Module Configuration</h3>';
 
@@ -786,6 +799,13 @@ function init_epay_payment() {
 				'ownreceipt'     => Epay_Payment_Helper::yes_no_to_int( $this->ownreceipt ),
 				'timeout'        => '60'
 			);
+
+            if(isset($this->paymenttype) && !empty($this->paymenttype)) {
+                $epay_args['paymenttype'] = $this->paymenttype;
+            } elseif(isset($this->paymentcollection) && !empty($this->paymentcollection)) {
+                $epay_args['paymentcollection'] = $this->paymentcollection;
+                $epay_args['lockpaymentcollection'] = 1;
+            }
 
             if($this->ageverificationmode == Epay_Payment_Helper::AGEVERIFICATION_ENABLED_ALL || ($this->ageverificationmode == Epay_Payment_Helper::AGEVERIFICATION_ENABLED_DK && $order->get_shipping_country() == "DK"))
             {
@@ -1602,7 +1622,11 @@ function init_epay_payment() {
         public static function get_subgates() {
             return [
                 "mobilepay" => 'Epay_MobilePay',
-                "applepay" => 'Epay_ApplePay'
+                "applepay" => 'Epay_ApplePay',
+                "viabill" => 'Epay_ViaBill',
+                "paypal" => 'Epay_PayPal',
+                "klarna" => 'Epay_Klarna',
+                "ideal" => 'Epay_iDEAL',
             ];
         }
 
@@ -1659,6 +1683,11 @@ function init_epay_payment() {
     * Custom function to register a payment method type
 
     */
+
+
+
+
+
     function oawoo_register_order_approval_payment_method_type() {
         // Check if the required class exists
         if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
@@ -1673,10 +1702,22 @@ function init_epay_payment() {
             'woocommerce_blocks_payment_method_type_registration',
             function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
                 // Register an instance of My_Custom_Gateway_Blocks
-                $payment_method_registry->register( new Epay_Payment_Blocks );
+                foreach( wc()->payment_gateways()->payment_gateways() as $payment_gateway )
+                {
+                    if($payment_gateway instanceof Epay_Payment)
+                    {
+                        $payment_method_registry->register( new Epay_Payment_Blocks($payment_gateway) );
+                    }
+                }
             }
         );
     }
+
+
+
+
+
+
 
     /*
     * Display Age Verification Product Fields

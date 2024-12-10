@@ -27,5 +27,17 @@ class subgate extends Epay_Payment {
         $this->form_fields = [];
     }
 
+    public function get_settings($key)
+    {
+        if(isset($this->settings[$key]))
+        {
+            return $this->settings[$key];
+        }
+        
+        if(isset($this->main_settings[$key]))
+        {
+            return $this->main_settings[$key];
+        }
+    }
 }
 ?>
