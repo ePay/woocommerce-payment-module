@@ -1,11 +1,11 @@
 === ePay Payment Solutions===
 Contributors: ePay Payment Solutions
-Tags: woocommerce, woo commerce, payment, payment gateway, gateway, subscription, subscriptions, epay, integration, woocommerce epay, psp
+Tags: payment, gateway, subscription, subscriptions, psp
 Requires at least: 4.0.0
-Tested up to: 6.5.5
-Stable tag: 6.0.13
-License: GPLv3 or later
-License URI: https://www.gnu.org/licenses/gpl-3.0.html
+Tested up to: 6.7.1
+Stable tag: 6.0.15
+License:           GPL v2 or later
+License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 WC requires at least: 3.2
 WC tested up to: 9.0.2
 

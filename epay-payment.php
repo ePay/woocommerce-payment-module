@@ -1,11 +1,13 @@
 <?php
 /**
  * Plugin Name: ePay Payment Solutions
- * Plugin URI: https://www.epay.dk
+ * Plugin URI: https://docs.epay.dk/payment-modules/woocommerce/installation
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.15
+ * Version: 6.0.16
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
+ * License:           GPL v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: epay-payment
  * Requires Plugins: woocommerce
  *
@@ -16,7 +18,7 @@
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.15' );
+define( 'EPAYCLASSIC_VERSION', '6.0.16' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -169,6 +171,7 @@ function init_epay_payment() {
 			$this->rolecapturerefunddelete            = array_key_exists( 'rolecapturerefunddelete', $this->settings ) ? $this->settings['rolecapturerefunddelete'] : 'shop_manager';
             $this->orderstatusaftercancelledpayment   = array_key_exists( 'orderstatusaftercancelledpayment', $this->settings ) ? $this->settings['orderstatusaftercancelledpayment'] : Epay_Payment_Helper::STATUS_CANCELLED;
             $this->ageverificationmode                = array_key_exists( 'ageverificationmode', $this->settings ) ? $this->settings['ageverificationmode'] : Epay_Payment_Helper::AGEVERIFICATION_DISABLED;
+			$this->paymentcollection                  = array_key_exists( 'paymentcollection', $this->settings ) ? $this->settings['paymentcollection'] : '0';
 		}
     
         public function get_settings($key)
@@ -248,19 +251,19 @@ function init_epay_payment() {
 		 * Enqueue Admin Styles and Scripts
 		 */
 		public function enqueue_wc_epay_payment_admin_styles_and_scripts() {
-			wp_register_style( 'epay_payment_admin_style', plugins_url( 'epay-payment/style/epay-payment-admin.css' ) );
+			wp_register_style( 'epay_payment_admin_style', plugins_url( 'epay-payment/style/epay-payment-admin.css' ), null, 1 );
 			wp_enqueue_style( 'epay_payment_admin_style' );
 
 			// Fix for load of Jquery time!
 			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'epay_payment_admin', plugins_url( 'epay-payment/scripts/epay-payment-admin.js') );
+			wp_enqueue_script( 'epay_payment_admin', plugins_url( 'epay-payment/scripts/epay-payment-admin.js'), null, 1, false );
 		}
 
 		/**
 		 * Enqueue Frontend Styles and Scripts
 		 */
 		public function enqueue_wc_epay_payment_front_styles() {
-			wp_register_style( 'epay_payment_front_style', plugins_url( 'epay-payment/style/epay-payment-front.css' ) );
+			wp_register_style( 'epay_payment_front_style', plugins_url( 'epay-payment/style/epay-payment-front.css' ), null, 1 );
 			wp_enqueue_style( 'epay_payment_front_style' );
 		}
 
@@ -309,6 +312,12 @@ function init_epay_payment() {
 					'type'        => 'text',
 					'description' => 'The MD5 key is used to stamp data sent between WooCommerce and ePay to prevent it from being tampered with. The MD5 key is optional but if used here, must be the same as in the ePay administration.',
 					'default'     => ''
+				),
+				'paymentcollection'               => array(
+					'title'       => 'Payment Collection',
+					'type'        => 'text',
+					'description' => 'Specify which payment collection to show. 1 = Payment cards only',
+					'default'     => '0'
 				),
 				'remotepassword'                  => array(
 					'title'             => 'Remote password',

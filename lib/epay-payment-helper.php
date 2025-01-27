@@ -1072,10 +1072,10 @@ class Epay_Payment_Helper {
 			return;
 		}
 		foreach ( $messages as $message ) {
-			echo Epay_Payment_Helper::message_to_html(
+			echo wp_kses(Epay_Payment_Helper::message_to_html(
 				$message['type'],
 				$message['message']
-			);
+            ), array('div','p','strong'));
 		}
 		if ( ! get_option(
 			self::EPAY_PAYMENT_STATUS_MESSAGES_KEEP_FOR_POST,
