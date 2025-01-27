@@ -314,9 +314,9 @@ function init_epay_payment() {
 					'default'     => ''
 				),
 				'paymentcollection'               => array(
-					'title'       => 'Payment Collection',
+					'title'       => 'Paymentcollection',
 					'type'        => 'text',
-					'description' => 'Specify which payment collection to show. 1 = Payment cards only',
+					'description' => 'Specify which paymentcollection to show. 1 = Payment cards only',
 					'default'     => '0'
 				),
 				'remotepassword'                  => array(
