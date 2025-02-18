@@ -53,7 +53,7 @@ With ePay Payment for WooCommerce, you are able to integrate the ePay payment wi
 == Changelog ==
 
 = 6.0.17
-* Added suppor for new ePay gateway
+* Added support for new ePay gateway
 
 = 6.0.13 =
 * Payment completed log
