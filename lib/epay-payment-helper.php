@@ -351,25 +351,43 @@ class Epay_Payment_Helper {
 	 *
 	 * @return string
 	 */
-	public static function create_epay_payment_payment_html( $json_data ) {
-		$html = '<section>';
-		$html .= '<h3>' . __(
-				'Thank you for using ePay Payment Solutions.',
-				'epay-payment'
-			) . '</h3>';
-		$html .= '<p>' . __( 'Please wait...', 'epay-payment' ) . '</p>';
-		$html .= sprintf(
-			'<script type="text/javascript" src="%s" charset="UTF-8"></script>',
-			self::BOCLASSIC_instance()->plugin_url(
-				'/scripts/epay-payment-window.js'
-			)
-		);
-		$html .= sprintf(
-			'<script type="text/javascript" charset="UTF-8" defer>EpayPaymentWindow.init(%s)</script>',
-			$json_data
-		);
-		$html .= '<script type="text/javascript" src="https://ssl.ditonlinebetalingssystem.dk/integration/ewindow/paymentwindow.js" charset="UTF-8" defer></script>';
-		$html .= '</section>';
+	public static function create_epay_payment_payment_html( $json_data, $apikey, $posid ) {
+
+        $html = '<section>';
+        $html .= '<h3>' . __(
+                'Thank you for using ePay Payment Solutions.',
+                'epay-payment'
+            ) . '</h3>';
+        $html .= '<p>' . __( 'Please wait...', 'epay-payment' ) . '</p>';
+
+        if($apikey && $posid)
+        {
+            $epay_payment_api = new epay_payment_api($apikey, $posid);
+            $request = $epay_payment_api->createPaymentRequest($json_data);
+            $request_data = json_decode($request);
+
+            $paymentWindowUrl = $request_data->paymentWindowUrl;
+
+            $html .= '<script>';
+            $html .= 'window.location.href = "'.$paymentWindowUrl.'";';
+            $html .= '</script>';
+        }
+        else
+        {
+            $html .= sprintf(
+            '<script type="text/javascript" src="%s" charset="UTF-8"></script>',
+            self::BOCLASSIC_instance()->plugin_url(
+                '/scripts/epay-payment-window.js'
+            )
+            );
+            $html .= sprintf(
+                '<script type="text/javascript" charset="UTF-8" defer>EpayPaymentWindow.init(%s)</script>',
+                $json_data
+            );
+            $html .= '<script type="text/javascript" src="https://ssl.ditonlinebetalingssystem.dk/integration/ewindow/paymentwindow.js" charset="UTF-8" defer></script>';
+        }
+        
+        $html .= '</section>';
 
 		return $html;
 	}
@@ -429,7 +447,7 @@ class Epay_Payment_Helper {
 		}
 		// Validate MD5!
 		$var = '';
-		if ( strlen( $md5_key ) > 0 ) {
+		if ( isset( $md5_key ) && !empty($md5_key)) {
 			foreach ( $params as $key => $value ) {
 				if ( 'hash' !== $key ) {
 					$var .= $value;

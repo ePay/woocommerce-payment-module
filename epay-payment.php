@@ -3,7 +3,7 @@
  * Plugin Name: ePay Payment Solutions
  * Plugin URI: https://docs.epay.dk/payment-modules/woocommerce/installation
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.16
+ * Version: 6.0.17
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
  * License:           GPL v2 or later
@@ -18,7 +18,7 @@
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.16' );
+define( 'EPAYCLASSIC_VERSION', '6.0.17' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -33,6 +33,7 @@ function init_epay_payment() {
 	}
 
 	include( EPAYCLASSIC_PATH . '/lib/epay-payment-soap.php' );
+	include( EPAYCLASSIC_PATH . '/lib/epay-payment-api.php' );
 	include( EPAYCLASSIC_PATH . '/lib/epay-payment-helper.php' );
 	include( EPAYCLASSIC_PATH . '/lib/epay-payment-log.php' );
 
@@ -64,6 +65,8 @@ function init_epay_payment() {
         private $ageverificationmode;
         protected $paymenttype;
         protected $paymentcollection;
+        private $apikey;
+        private $posid;
 
 		/**
 		 * Singleton instance
@@ -172,6 +175,8 @@ function init_epay_payment() {
             $this->orderstatusaftercancelledpayment   = array_key_exists( 'orderstatusaftercancelledpayment', $this->settings ) ? $this->settings['orderstatusaftercancelledpayment'] : Epay_Payment_Helper::STATUS_CANCELLED;
             $this->ageverificationmode                = array_key_exists( 'ageverificationmode', $this->settings ) ? $this->settings['ageverificationmode'] : Epay_Payment_Helper::AGEVERIFICATION_DISABLED;
 			$this->paymentcollection                  = array_key_exists( 'paymentcollection', $this->settings ) ? $this->settings['paymentcollection'] : '0';
+			$this->apikey                             = array_key_exists( 'apikey', $this->settings ) ? $this->settings['apikey'] : '';
+			$this->posid                              = array_key_exists( 'posid', $this->settings ) ? $this->settings['posid'] : '';
 		}
     
         public function get_settings($key)
@@ -186,6 +191,9 @@ function init_epay_payment() {
 		 * Init hooks
 		 */
 		public function init_hooks() {
+
+            // $this->_boclassic_log->add( "### init_hooks : ".get_class( $this )."### ".print_r($this, true)." ###" );
+
 			// Actions
 			add_action( 'woocommerce_api_' . strtolower( get_class( $this ) ), array(
 				$this,
@@ -199,7 +207,10 @@ function init_epay_payment() {
 				) );
 
 				if ( $this->remoteinterface == 'yes' ) {
-					add_action( 'add_meta_boxes', array( $this, 'epay_payment_meta_boxes' ) );
+
+			        // if ($this->module_check( $order_id ) )
+                        
+                    add_action( 'add_meta_boxes', array( $this, 'epay_payment_meta_boxes' ) );
 					add_action( 'wp_before_admin_bar_render', array( $this, 'epay_payment_actions' ) );
 					add_action( 'admin_notices', array( $this, 'epay_payment_admin_notices' ) );
 				}
@@ -277,6 +288,33 @@ function init_epay_payment() {
 				$roles_options[ $role ] = translate_user_role( $details['name'] );
 			}
 			$this->form_fields = array(
+                'api_section' => array(
+                    'type'  => 'title',
+                    'title' => 'API Indstillinger',
+                    'description'  => 'Indtast API-oplysninger for at forbinde betalingsgatewayen. (API key og PointOfSale ID er kun nødvendig hvis ny gateway benyttes)'
+                ),
+				'apikey'                           => array(
+					'title'       => 'API Key',
+					'type'        => 'text',
+					'description' => 'Find API nøgle ved at logge ind i ePays Backoffice under Indstillinger -> Udviklere.',
+					'default'     => ''
+				),
+				'posid'                           => array(
+					'title'       => 'PointOfSale ID',
+					'type'        => 'text',
+					'description' => 'Find PointOfSale ID ved at logge ind i ePays Backoffice under Indstillinger -> Salgssteder.',
+					'default'     => ''
+				),
+                'separator_1' => array(
+                    'type'        => 'title',
+                    'title'       => '',
+                    'description' => '<hr>',
+                ),
+                'window_section' => array(
+                    'type'  => 'title',
+                    'title' => 'Betalingsvindue indstillinger',
+                    'description'  => ''
+                ),
 				'enabled'                         => array(
 					'title'   => 'Activate module',
 					'type'    => 'checkbox',
@@ -693,7 +731,7 @@ function init_epay_payment() {
 				$amount           = Epay_Payment_Helper::convert_price_to_minorunits( $amount, $minorunits, $this->roundingmode );
 				$renewal_order_id = $renewal_order->get_id();
 
-				$webservice         = new Epay_Payment_Soap( $this->remotepassword, true );
+				$webservice         = new Epay_Payment_Soap( $this->remotepassword, true, $this->apikey, $this->posid );
 				$authorize_response = $webservice->authorize( $this->merchant, $epay_subscription_id, $renewal_order_id, $amount, Epay_Payment_Helper::get_iso_code( $order_currency ), (bool) Epay_Payment_Helper::yes_no_to_int( $this->instantcapture ), $this->group, $this->authmail );
 				if ( $authorize_response->authorizeResult === false ) {
 					$error_message = '';
@@ -705,7 +743,11 @@ function init_epay_payment() {
 
 					return new WP_Error( 'epay_payment_error', $error_message );
 				}
-				$renewal_order->payment_complete( $authorize_response->transactionid );
+                
+                if(isset($authorize_response->transactionid) && !empty($authorize_response->transactionid))
+                {
+                    $renewal_order->payment_complete( $authorize_response->transactionid );
+                }
 
 				// Add order note
 				$message = sprintf( __( 'ePay Payment Solutions Subscription was authorized for renewal order %s with transaction id %s', 'epay-payment' ), $renewal_order_id, $authorize_response->transactionid );
@@ -751,7 +793,7 @@ function init_epay_payment() {
 						return new WP_Error( 'epay_payment_error', $order_note );
 					}
 
-					$webservice                   = new Epay_Payment_Soap( $this->remotepassword, true );
+					$webservice                   = new Epay_Payment_Soap( $this->remotepassword, true, $this->apikey, $this->posid );
 					$delete_subscription_response = $webservice->delete_subscription( $this->merchant, $epay_subscription_id );
 					if ( $delete_subscription_response->deletesubscriptionResult === true ) {
 						$subscription->add_order_note( sprintf( __( 'Subscription successfully Cancelled. - ePay Payment Solutions Subscription Id: %s', 'epay-payment' ), $epay_subscription_id ) );
@@ -859,7 +901,8 @@ function init_epay_payment() {
 			}
 			$epay_args      = apply_filters( 'epay_payment_epay_args', $epay_args, $order_id );
 			$epay_args_json = wp_json_encode( $epay_args );
-			$payment_html   = Epay_Payment_Helper::create_epay_payment_payment_html( $epay_args_json );
+
+		    $payment_html   = Epay_Payment_Helper::create_epay_payment_payment_html( $epay_args_json, $this->apikey, $this->posid );
 
 			echo ent2ncr( $payment_html );
 		}
@@ -879,7 +922,57 @@ function init_epay_payment() {
 		 * Check for epay IPN Response
 		 **/
 		public function epay_payment_callback() {
-			$params        = stripslashes_deep( $_GET );
+
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                
+                $rawData = file_get_contents("php://input");
+                $data = json_decode($rawData, true);
+
+                // ?wc-api=Epay_Payment&wcorderid=94&txnid=384118132&orderid=94&amount=5000&currency=208&date=20250127&time=1501&txnfee=0&paymenttype=3&cardno=333333XXXXXX3000&fraud=1&hash=139b63d1ec96c0be57bd74c505cd38b6
+
+                // ["transaction"]=> array(23) { 
+                // ["amount"]=> int(10000) 
+                // ["attributes"]=> NULL 
+                // ["clientIp"]=> string(15) "157.250.173.210" 
+                // ["createdAt"]=> string(26) "2025-02-05T13:49:02.94547Z" 
+                // ["currency"]=> string(3) "DKK" 
+                // ["customerId"]=> NULL 
+                // ["errorCode"]=> NULL 
+                // ["exemptions"]=> array(0) { } 
+                // ["id"]=> string(36) "0194d65f-1461-768f-920f-0675ea235bed" 
+                // ["instantCapture"]=> string(3) "OFF" 
+                // ["paymentMethodDisplayText"]=> string(16) "44540000XXXX0003" 
+                // ["paymentMethodExpiry"]=> string(20) "2025-12-31T00:00:00Z" 
+                // ["paymentMethodId"]=> string(36) "0194d5e1-e404-7e4d-9351-44a487e98709" 
+                // ["paymentMethodSubType"]=> string(4) "Visa" 
+                // ["paymentMethodType"]=> string(4) "CARD" 
+                // ["pointOfSaleId"]=> string(36) "01935342-783e-791d-b757-c83698747d28" 
+                // ["reference"]=> string(3) "101" 
+                // ["scaMode"]=> string(6) "NORMAL" 
+                // ["sessionId"]=> string(36) "0194d65e-dfa7-7294-978d-99b160e23546" 
+                // ["state"]=> string(7) "SUCCESS" 
+                // ["subscriptionId"]=> NULL 
+                // ["textOnStatement"]=> NULL 
+                // ["type"]=> string(7) "PAYMENT" }
+
+                $payment_type_map = array("Visa"=>3, "Mastercard"=>4);
+
+                $params['txnid'] = $data['transaction']['id'];
+                $params['wcorderid'] = $data['transaction']['reference'];
+                if(isset($data['subscription']['id']))
+                {
+                    $params['subscriptionid'] = $data['subscription']['id'];
+                }
+                $params['paymenttype'] = $payment_type_map[$data['transaction']['paymentMethodSubType']];
+                $params['txnfee'] = 0; // $data['transaction'][''];
+
+                $this->md5key = null;
+            }
+            else
+            {
+			    $params        = stripslashes_deep( $_GET );
+            }
+ 
 			$message       = '';
 			$order         = null;
 			$response_code = 400;
@@ -1162,6 +1255,11 @@ function init_epay_payment() {
 				$action   = $params['boclassicaction'];
 				$amount   = $params['amount'];
 
+                if (!$this->module_check( $order_id ) )
+                {
+					return new WP_Error( 'epay_payment_error', __( 'No payment module match' ) );
+                }
+
 				switch ( $action ) {
 					case 'capture':
 						$capture_result = $this->epay_payment_capture_payment( $order_id, $amount, $currency );
@@ -1211,12 +1309,15 @@ function init_epay_payment() {
 				$merchant_number = $this->merchant;
 				$remote_password = $this->remotepassword;
 			}
-
-			$webservice       = new Epay_Payment_Soap( $remote_password );
+            
+            $webservice       = new Epay_Payment_Soap( $remote_password, false, $this->apikey, $this->posid );
 			$capture_response = $webservice->capture( $merchant_number, $transaction_id, $amount_in_minorunits );
+
 			if ( $capture_response->captureResult === true ) {
+
 				do_action( 'epay_payment_after_capture', $order_id );
 
+                $order->payment_complete();
 				return true;
 			} else {
 				$message = sprintf( __( 'Capture action failed for order %s', 'epay-payment' ), $order_id );
@@ -1225,7 +1326,7 @@ function init_epay_payment() {
 				} elseif ( $capture_response->pbsResponse != '-1' ) {
 					$message .= ' - ' . $webservice->get_pbs_error( $merchant_number, $capture_response->pbsResponse );
 				}
-				$this->_boclassic_log->add( $message );
+				// $this->_boclassic_log->add( $message );
 
 				return new WP_Error( 'epay_payment_error', $message );
 			}
@@ -1261,7 +1362,7 @@ function init_epay_payment() {
 				$remote_password = $this->remotepassword;
 			}
 
-			$webservice      = new Epay_Payment_Soap( $remote_password );
+			$webservice      = new Epay_Payment_Soap( $remote_password, false, $this->apikey, $this->posid );
 			$refund_response = $webservice->refund( $merchant_number, $transaction_id, $amount_in_minorunits );
 			if ( $refund_response->creditResult === true ) {
 				do_action( 'epay_payment_after_refund', $order_id );
@@ -1299,22 +1400,22 @@ function init_epay_payment() {
 				$remote_password = $this->remotepassword;
 			}
 
-			$webservice      = new Epay_Payment_Soap( $remote_password );
-			$delete_response = $webservice->delete( $merchant_number, $transaction_id );
-			if ( $delete_response->deleteResult === true ) {
-				do_action( 'epay_payment_after_delete', $order_id );
+            $webservice      = new Epay_Payment_Soap( $remote_password, false, $this->apikey, $this->posid );
+            $delete_response = $webservice->delete( $merchant_number, $transaction_id );
+            if ( $delete_response->deleteResult === true ) {
+                do_action( 'epay_payment_after_delete', $order_id );
 
-				return true;
-			} else {
-				$message = sprintf( __( 'Delete action failed for order %s', 'epay-payment' ), $order_id );
-				if ( $delete_response->epayresponse != '-1' ) {
-					$message .= ' - ' . $webservice->get_epay_error( $merchant_number, $delete_response->epayresponse );
-				}
-				$this->_boclassic_log->add( $message );
+                return true;
+            } else {
+                $message = sprintf( __( 'Delete action failed for order %s', 'epay-payment' ), $order_id );
+                if ( $delete_response->epayresponse != '-1' ) {
+                    $message .= ' - ' . $webservice->get_epay_error( $merchant_number, $delete_response->epayresponse );
+                }
+                $this->_boclassic_log->add( $message );
 
-				return new WP_Error( 'epay_payment_error', $message );
-			}
-		}
+                return new WP_Error( 'epay_payment_error', $message );
+            }        
+        }
 
 		/**
 		 * Add subscripts payment meta, to allow for subscripts import to map tokens, and for admins to manually set a subscription token
@@ -1430,18 +1531,18 @@ function init_epay_payment() {
 					$remote_password = $this->remotepassword;
 				}
 
-				$webservice               = new Epay_Payment_Soap( $remote_password );
-				$get_transaction_response = $webservice->get_transaction( $merchant_number, $transaction_id );
-				if ( $get_transaction_response->gettransactionResult === false ) {
-					$html = __( 'Get Transaction action failed', 'epay-payment' );
-					if ( $get_transaction_response->epayresponse != '-1' ) {
-						$html .= ' - ' . $webservice->get_epay_error( $merchant_number, $get_transaction_response->epayresponse );
-					}
+                $webservice               = new Epay_Payment_Soap( $remote_password, false, $this->apikey, $this->posid );
+                $get_transaction_response = $webservice->get_transaction( $merchant_number, $transaction_id );
+                if ( $get_transaction_response->gettransactionResult === false ) {
+                    $html = __( 'Get Transaction action failed', 'epay-payment' );
+                    if ( $get_transaction_response->epayresponse != '-1' ) {
+                        $html .= ' - ' . $webservice->get_epay_error( $merchant_number, $get_transaction_response->epayresponse );
+                    }
+                    return $html;
+                }
+                $transaction   = $get_transaction_response->transactionInformation;
 
-					return $html;
-				}
-				$transaction   = $get_transaction_response->transactionInformation;
-				$currency_code = $transaction->currency;
+                $currency_code = $transaction->currency;
 				$currency      = Epay_Payment_Helper::get_iso_code( $currency_code, false );
 				$minorunits    = Epay_Payment_Helper::get_currency_minorunits( $currency );
 
