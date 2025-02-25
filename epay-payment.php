@@ -3,7 +3,7 @@
  * Plugin Name: ePay Payment Solutions
  * Plugin URI: https://docs.epay.dk/payment-modules/woocommerce/installation
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.17
+ * Version: 6.0.18
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
  * License:           GPL v2 or later
@@ -18,7 +18,7 @@
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.17' );
+define( 'EPAYCLASSIC_VERSION', '6.0.18' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -262,19 +262,19 @@ function init_epay_payment() {
 		 * Enqueue Admin Styles and Scripts
 		 */
 		public function enqueue_wc_epay_payment_admin_styles_and_scripts() {
-			wp_register_style( 'epay_payment_admin_style', plugins_url( 'epay-payment/style/epay-payment-admin.css' ), null, 1 );
+			wp_register_style( 'epay_payment_admin_style', plugins_url( 'style/epay-payment-admin.css', __FILE__ ), array(), 1 );
 			wp_enqueue_style( 'epay_payment_admin_style' );
 
 			// Fix for load of Jquery time!
 			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'epay_payment_admin', plugins_url( 'epay-payment/scripts/epay-payment-admin.js'), null, 1, false );
+			wp_enqueue_script( 'epay_payment_admin', plugins_url( 'scripts/epay-payment-admin.js', __FILE__ ), array(), 1, false );
 		}
 
 		/**
 		 * Enqueue Frontend Styles and Scripts
 		 */
 		public function enqueue_wc_epay_payment_front_styles() {
-			wp_register_style( 'epay_payment_front_style', plugins_url( 'epay-payment/style/epay-payment-front.css' ), null, 1 );
+			wp_register_style( 'epay_payment_front_style', plugins_url( 'style/epay-payment-front.css', __FILE__ ), array(), 1 );
 			wp_enqueue_style( 'epay_payment_front_style' );
 		}
 
@@ -928,34 +928,7 @@ function init_epay_payment() {
                 $rawData = file_get_contents("php://input");
                 $data = json_decode($rawData, true);
 
-                // ?wc-api=Epay_Payment&wcorderid=94&txnid=384118132&orderid=94&amount=5000&currency=208&date=20250127&time=1501&txnfee=0&paymenttype=3&cardno=333333XXXXXX3000&fraud=1&hash=139b63d1ec96c0be57bd74c505cd38b6
-
-                // ["transaction"]=> array(23) { 
-                // ["amount"]=> int(10000) 
-                // ["attributes"]=> NULL 
-                // ["clientIp"]=> string(15) "157.250.173.210" 
-                // ["createdAt"]=> string(26) "2025-02-05T13:49:02.94547Z" 
-                // ["currency"]=> string(3) "DKK" 
-                // ["customerId"]=> NULL 
-                // ["errorCode"]=> NULL 
-                // ["exemptions"]=> array(0) { } 
-                // ["id"]=> string(36) "0194d65f-1461-768f-920f-0675ea235bed" 
-                // ["instantCapture"]=> string(3) "OFF" 
-                // ["paymentMethodDisplayText"]=> string(16) "44540000XXXX0003" 
-                // ["paymentMethodExpiry"]=> string(20) "2025-12-31T00:00:00Z" 
-                // ["paymentMethodId"]=> string(36) "0194d5e1-e404-7e4d-9351-44a487e98709" 
-                // ["paymentMethodSubType"]=> string(4) "Visa" 
-                // ["paymentMethodType"]=> string(4) "CARD" 
-                // ["pointOfSaleId"]=> string(36) "01935342-783e-791d-b757-c83698747d28" 
-                // ["reference"]=> string(3) "101" 
-                // ["scaMode"]=> string(6) "NORMAL" 
-                // ["sessionId"]=> string(36) "0194d65e-dfa7-7294-978d-99b160e23546" 
-                // ["state"]=> string(7) "SUCCESS" 
-                // ["subscriptionId"]=> NULL 
-                // ["textOnStatement"]=> NULL 
-                // ["type"]=> string(7) "PAYMENT" }
-
-                $payment_type_map = array("Visa"=>3, "Mastercard"=>4);
+                $payment_type_map = array ( "Dankort"=>1, "Visa"=>3, "Mastercard"=>4, "JCB"=>6, "Maestro"=>7, "Diners Club"=>8, "American Express"=>9);
 
                 $params['txnid'] = $data['transaction']['id'];
                 $params['wcorderid'] = $data['transaction']['reference'];

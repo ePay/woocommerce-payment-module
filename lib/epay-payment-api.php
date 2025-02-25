@@ -210,7 +210,7 @@ class epay_payment_api {
         }
         else
         {
-            return $result." - ".$http_code;
+            return $result;
         }
     }
 
