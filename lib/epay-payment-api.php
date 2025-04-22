@@ -30,6 +30,12 @@ class epay_payment_api {
             "failureUrl" => $params->cancelurl,
             "attributes" => array("wcorderid" => $params->orderid)
         );
+
+        if(isset($params->minimumuserage) && $params->minimumuserage > 0)
+        {
+            $ePayParameters['ageVerification']['minimumAge'] = intval($params->minimumuserage);
+            $ePayParameters['ageVerification']['country'] = $params->ageverificationcountry;
+        }
         
         if(isset($params->subscription) && $params->subscription == 1)
         {

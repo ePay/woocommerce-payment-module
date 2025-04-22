@@ -3,7 +3,7 @@
  * Plugin Name: ePay Payment Solutions
  * Plugin URI: https://docs.epay.dk/payment-modules/woocommerce/installation
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.18
+ * Version: 6.0.19
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
  * License:           GPL v2 or later
@@ -18,7 +18,7 @@
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.18' );
+define( 'EPAYCLASSIC_VERSION', '6.0.19' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -105,7 +105,7 @@ function init_epay_payment() {
 			$this->method_title       = 'ePay Payment Solutions';
 			$this->method_description = 'ePay Payment Solutions enables easy and secure payments on your shop';
 			$this->icon               = WP_PLUGIN_URL . '/' . plugin_basename( dirname( __FILE__ ) ) . '/epay-logo.svg';
-			$this->has_fields         = false;
+			$this->has_fields         = true;
             $this->paymenttype        = false;
             $this->paymentcollection  = false;
 
@@ -541,7 +541,7 @@ function init_epay_payment() {
 
 		/**
 		 * There are no payment fields for epay, but we want to show the description if set.
-		 **/
+         **/
 		public function payment_fields() {
 			$text_replace            = wptexturize( $this->description );
 			$paymentFieldDescription = wpautop( $text_replace );
@@ -552,6 +552,7 @@ function init_epay_payment() {
 			} else {
 				$merchant_number = $this->merchant;
 			}
+
 			if ( $merchant_number ) {
 				$paymentLogos .= '<script type="text/javascript" src="https://relay.ditonlinebetalingssystem.dk/integration/paymentlogos/PaymentLogos.aspx?merchantnumber=' . $merchant_number . '&direction=2&padding=2&rows=1&showdivs=0&logo=0&cardwidth=40&divid=boclassic_card_logos"></script>';
 			}
@@ -559,7 +560,7 @@ function init_epay_payment() {
 			$paymentLogos            .= '</div>';
 			$paymentFieldDescription .= $paymentLogos;
 			echo $paymentFieldDescription;
-		}
+        }
 
 		/**
 		 * Create invoice lines

@@ -3,7 +3,7 @@ Contributors: ePay Payment Solutions
 Tags: payment, gateway, subscription, subscriptions, psp
 Requires at least: 4.0.0
 Tested up to: 6.7.1
-Stable tag: 6.0.18
+Stable tag: 6.0.19
 License:           GPL v2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 WC requires at least: 3.2
@@ -51,6 +51,9 @@ With ePay Payment for WooCommerce, you are able to integrate the ePay payment wi
 
 
 == Changelog ==
+
+= 6.0.19
+* Ageverification
 
 = 6.0.18
 * Added support for new ePay gateway

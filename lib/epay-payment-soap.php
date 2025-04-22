@@ -430,7 +430,8 @@ class Epay_Payment_Soap {
 			$result = $this->client->getPbsError( $epay_params );
 
 			if ( $result->getPbsErrorResult == 'true' ) {
-				if ( array_key_exists( 'pbsResponeString', $result ) ) {
+
+                if (property_exists($result, "pbsResponeString" ) ) {
 					$res = $result->pbsResponeString;
 				} else {
 					$res = $result->pbsresponestring;
