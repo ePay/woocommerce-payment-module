@@ -3,7 +3,7 @@
  * Plugin Name: ePay Payment Solutions
  * Plugin URI: https://docs.epay.dk/payment-modules/woocommerce/installation
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.19
+ * Version: 6.0.20
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
  * License:           GPL v2 or later
@@ -18,7 +18,7 @@
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.19' );
+define( 'EPAYCLASSIC_VERSION', '6.0.20' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -357,6 +357,20 @@ function init_epay_payment() {
 					'description' => 'Specify which paymentcollection to show. 1 = Payment cards only',
 					'default'     => '0'
 				),
+                'icons'                      => array(
+                    'title'             => 'Credit card icons',
+                    'type'              => 'multiselect',
+                    'description'       => 'Select the card icons you would like displayed alongside the ePay payment option in your shop.',
+                    'desc_tip'          => true,
+                    'class'             => 'wc-enhanced-select',
+                    'css'               => 'width: 450px;',
+                    'custom_attributes' => array(
+                        'data-placeholder' => 'Select icons',
+                    ),
+                    'default'           => '',
+                    'options'           => self::get_card_icon_options(),
+                ),
+
 				'remotepassword'                  => array(
 					'title'             => 'Remote password',
 					'type'              => 'password',
@@ -1679,12 +1693,41 @@ function init_epay_payment() {
 			return plugins_url( $path, __FILE__ );
 		}
 
-		public function get_icon() {
+        public function get_icon() {
 
-			$icon_html = '<img src="' . $this->icon . '" alt="' . $this->method_title . '" width="50"  />';
+            $icon_html = '<img src="' . $this->icon . '" alt="' . $this->method_title . '" class=""  />';
 
-			return apply_filters( 'woocommerce_gateway_icon', $icon_html, $this->id );
+            $selected_icons = $this->get_settings('icons');
+
+            $allicons = [
+                'epay'           => plugins_url('epay-logo.svg', __FILE__),
+                'visa'           => plugins_url('images/visa.svg', __FILE__),
+                'mastercard'     => plugins_url('images/mastercard.svg', __FILE__),
+                'americanexpress'=> plugins_url('images/american_express.svg', __FILE__),
+                'dinersclub'     => plugins_url('images/diners_club.svg', __FILE__),
+                'ideal'          => plugins_url('images/ideal.svg', __FILE__),
+                'jcb'            => plugins_url('images/jcb.svg', __FILE__),
+                'maestro'        => plugins_url('images/maestro.svg', __FILE__),
+                'visa'           => plugins_url('images/visa.svg', __FILE__),
+                'dankort'        => plugins_url('images/dankort.svg', __FILE__),
+                'applepay'       => plugins_url('images/applepay.svg', __FILE__),
+                'mobilepay'      => plugins_url('images/mobilepay.svg', __FILE__),
+                'googlepay'      => plugins_url('images/googlepay.svg', __FILE__),
+                'viabill'      => plugins_url('images/viabill.svg', __FILE__),
+            ];
+
+            if(preg_match("/epay-logo\.svg/", $this->icon) && is_array($selected_icons) && count($selected_icons))
+            {
+                $icon_html = '';
+                foreach($selected_icons AS $cardname)
+                {
+			        $icon_html .= '<img src="' . $allicons[$cardname] . '" class="epay-card-icon" />';
+                }
+            }
+
+            return apply_filters( 'woocommerce_gateway_icon', $icon_html, $this->id );
         }
+
 
         public static function load_subgates($methods) {
             require_once( EPAYCLASSIC_PATH .'/lib/subgates/subgate.php' );
@@ -1714,6 +1757,24 @@ function init_epay_payment() {
             ];
         }
 
+        public static function get_card_icon_options() {
+                return [
+                        'dankort'               => 'Dankort',
+                        'visa'                  => 'Visa',
+                        'mastercard'            => 'Mastercard',
+                        'mobilepay'             => 'MobilePay',
+                        'applepay'             => 'Apple Pay',
+                        // 'googlepay'            => 'Google Pay',
+                        'viabill'               => 'ViaBill',
+                        'maestro'               => 'Maestro',
+                        'jcb'                   => 'JCB',
+                        'americanexpress'       => 'American Express',
+                        'diners'                => 'Diner\'s Club',
+                        'discovercard'          => 'Discover Card',
+                        'dinersclub'            => 'Diners Club',
+                        // 'ideal'                 => 'iDeal',
+                ];
+        }
 	}
 
     function WC_EP(): Epay_Payment {
@@ -1887,4 +1948,12 @@ function init_epay_payment() {
         $ep_category_ageverification = filter_input(INPUT_POST, 'ep_category_ageverification');
         update_term_meta($term_id, 'ep_category_ageverification', $ep_category_ageverification);
     }
+
+    /*
+    function add_csp_header() {
+        header("Content-Security-Policy: script-src 'self' 'unsafe-inline' https://ssl.ditonlinebetalingssystem.dk;");
+    }
+    add_action('send_headers', 'add_csp_header');
+    */
 }
+?>

@@ -7,7 +7,7 @@ class Epay_MobilePay extends subgate
 
         $this->id = "epay_mobilepay";
         $this->paymenttype = 29;
-		$this->icon = WP_PLUGIN_URL . '/epay-payment/images/mobilepay.svg';
+		$this->icon = $this->plugin_url('images/mobilepay.svg');
         // $this->enabled = "yes";
         
         $this->method_title = "ePay - MobilePay";

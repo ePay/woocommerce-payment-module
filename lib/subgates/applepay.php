@@ -7,7 +7,7 @@ class Epay_ApplePay extends subgate
 
         $this->id = "epay_applepay";
         $this->paymentcollection = 8;
-		$this->icon = WP_PLUGIN_URL . '/epay-payment/images/applepay.svg';
+		$this->icon = $this->plugin_url('images/applepay.svg');
         // $this->enabled = "yes";
         
         $this->method_title = "ePay - ApplePay";

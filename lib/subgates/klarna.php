@@ -7,7 +7,7 @@ class Epay_Klarna extends subgate
 
         $this->id = "epay_klarna";
         $this->paymenttype = 17;
-		$this->icon = WP_PLUGIN_URL . '/epay-payment/images/klarna.svg';
+		$this->icon = $this->plugin_url('images/klarna.svg');
         // $this->enabled = "yes";
         
         $this->method_title = "ePay - Klarna";

@@ -7,7 +7,7 @@ class Epay_PayPal extends subgate
 
         $this->id = "epay_paypal";
         $this->paymenttype = 14;
-		$this->icon = WP_PLUGIN_URL . '/epay-payment/images/paypal.svg';
+		$this->icon = $this->plugin_url('images/paypal.svg');
         // $this->enabled = "yes";
         
         $this->method_title = "ePay - PayPal";

@@ -9,15 +9,13 @@ gateways.forEach(gateway => {
     
     const ariaLabel = window.wp.htmlEntities.decodeEntities( settings.title );
 
-    const icon = '<img src="'+settings.icon+'">';
-    
     const Label = () => {
         return window.wp.element.createElement('span', {className: 'blocks-woocommerce-epay-inner'},
             window.wp.element.createElement('span', {
                 className: 'blocks-woocommerce-epay-inner__title'
             }, ariaLabel),
             window.wp.element.createElement('span', {
-                dangerouslySetInnerHTML: {__html: icon},
+                dangerouslySetInnerHTML: {__html: settings.icon},
                 className: 'blocks-woocommerce-epay-inner__icons'
             }),
         );

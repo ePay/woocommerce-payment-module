@@ -7,7 +7,7 @@ class Epay_iDEAL extends subgate
 
         $this->id = "epay_ideal";
         $this->paymenttype = 25;
-		$this->icon = WP_PLUGIN_URL . '/epay-payment/images/ideal.svg';
+		$this->icon = $this->plugin_url('images/ideal.svg');
         // $this->enabled = "yes";
         
         $this->method_title = "ePay - iDEAL";

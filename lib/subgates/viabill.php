@@ -8,7 +8,7 @@ class Epay_ViaBill extends subgate
         $this->id = "epay_viabill";
         $this->paymentcollection = 7;
         $this->paymenttype = 23;
-		$this->icon = WP_PLUGIN_URL . '/epay-payment/images/viabill.svg';
+		$this->icon = $this->plugin_url('images/viabill.svg');
         // $this->enabled = "yes";
         
         $this->method_title = "ePay - ViaBill";
