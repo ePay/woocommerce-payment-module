@@ -40,6 +40,8 @@ class Epay_Payment_Soap {
 			'https://ssl.ditonlinebetalingssystem.dk/remote/subscription.asmx?WSDL' :
 			'https://ssl.ditonlinebetalingssystem.dk/remote/payment.asmx?WSDL';
 
+
+
 		if ( $this->proxy->is_enabled() && $this->proxy->send_through_proxy( $service_url ) ) {
 			$options['proxy_host'] = $this->proxy->host();
 			$options['proxy_port'] = $this->proxy->port();

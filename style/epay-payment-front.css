@@ -2,6 +2,12 @@
     display: inline-block;
 }
 
+li.wc_payment_method img.epay-card-icon {
+    display: inline-block;
+    margin-right:5px;
+    height: 24px;
+}
+
 .blocks-woocommerce-epay-inner {
     display: flex;
     justify-content: space-between;

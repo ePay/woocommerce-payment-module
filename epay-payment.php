@@ -3,7 +3,7 @@
  * Plugin Name: ePay Payment Solutions
  * Plugin URI: https://docs.epay.dk/payment-modules/woocommerce/installation
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.20
+ * Version: 6.0.21
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
  * License:           GPL v2 or later
@@ -17,8 +17,9 @@
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
+define( 'EPAYCLASSIC_PATH_FILE',  __FILE__ );
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.20' );
+define( 'EPAYCLASSIC_VERSION', '6.0.21' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -288,12 +289,13 @@ function init_epay_payment() {
 				$roles_options[ $role ] = translate_user_role( $details['name'] );
 			}
 			$this->form_fields = array(
+                /*
                 'api_section' => array(
                     'type'  => 'title',
                     'title' => 'API Indstillinger',
                     'description'  => 'Indtast API-oplysninger for at forbinde betalingsgatewayen. (API key og PointOfSale ID er kun nødvendig hvis ny gateway benyttes)'
                 ),
-				'apikey'                           => array(
+                'apikey'                           => array(
 					'title'       => 'API Key',
 					'type'        => 'text',
 					'description' => 'Find API nøgle ved at logge ind i ePays Backoffice under Indstillinger -> Udviklere.',
@@ -310,6 +312,7 @@ function init_epay_payment() {
                     'title'       => '',
                     'description' => '<hr>',
                 ),
+                */
                 'window_section' => array(
                     'type'  => 'title',
                     'title' => 'Betalingsvindue indstillinger',
@@ -559,6 +562,7 @@ function init_epay_payment() {
 		public function payment_fields() {
 			$text_replace            = wptexturize( $this->description );
 			$paymentFieldDescription = wpautop( $text_replace );
+            /*
 			$paymentLogos            = '<div id="boclassic_card_logos">';
 
 			if ( class_exists( 'sitepress' ) ) {
@@ -571,8 +575,10 @@ function init_epay_payment() {
 				$paymentLogos .= '<script type="text/javascript" src="https://relay.ditonlinebetalingssystem.dk/integration/paymentlogos/PaymentLogos.aspx?merchantnumber=' . $merchant_number . '&direction=2&padding=2&rows=1&showdivs=0&logo=0&cardwidth=40&divid=boclassic_card_logos"></script>';
 			}
 
-			$paymentLogos            .= '</div>';
+            $paymentLogos            .= '</div>';
 			$paymentFieldDescription .= $paymentLogos;
+            */
+
 			echo $paymentFieldDescription;
         }
 
@@ -1543,6 +1549,7 @@ function init_epay_payment() {
 				$card_info     = Epay_Payment_Helper::get_cardtype_groupid_and_name( $transaction->cardtypeid );
 				$card_group_id = $card_info[1];
 				$card_name     = $card_info[0];
+				$card_logoname     = $card_info[2];
 
 				if ( isset( $card_group_id ) && $card_group_id != '-1' ) {
 					$this->add_or_update_payment_type_id_to_order( $order, $card_group_id );
@@ -1559,8 +1566,15 @@ function init_epay_payment() {
 
 				$html = '<div class="boclassic-info">';
 				if ( isset( $card_group_id ) && $card_group_id != '-1' ) {
-					$html .= '<img class="boclassic-paymenttype-img" src="https://cdn.epay.eu/paymentlogos/external/' . $card_group_id . '.png" alt="' . $card_name . '" title="' . $card_name . '" />';
+
+                    $html .= '<img class="boclassic-paymenttype-img" src="'.esc_url(Epay_Payment_Helper::get_card_logourl_by_type($card_logoname)).'">';
+
+                    if(Epay_Payment_Helper::get_card_logourl_by_type($transaction->wallettype))
+                    {
+                        $html .= '<img class="boclassic-paymenttype-img" src="'.esc_url(Epay_Payment_Helper::get_card_logourl_by_type($transaction->wallettype)).'">';
+                    }
 				}
+
 				$html .= '<div class="boclassic-transactionid">';
 				$html .= '<p>' . __( 'Transaction ID', 'epay-payment' ) . '</p>';
 				$html .= '<p>' . $transaction->transactionid . '</p>';
@@ -1695,7 +1709,7 @@ function init_epay_payment() {
 
         public function get_icon() {
 
-            $icon_html = '<img src="' . $this->icon . '" alt="' . $this->method_title . '" class=""  />';
+            $icon_html = '<img src="' . $this->icon . '" alt="' . $this->method_title . '" class="epay-card-icon"  />';
 
             $selected_icons = $this->get_settings('icons');
 

@@ -799,6 +799,65 @@ class Epay_Payment_Helper {
 		return array_search( strtoupper( $code ), $isoCodeArray );
 	}
 
+    public static function get_card_logourl_by_type($name)
+    {
+        $name = str_replace('_', '', strtolower($name));
+
+        $allicons = [
+            'epay'           => plugins_url('epay-logo.svg', EPAYCLASSIC_PATH_FILE),
+            'visa'           => plugins_url('images/visa.svg', EPAYCLASSIC_PATH_FILE),
+            'mastercard'     => plugins_url('images/mastercard.svg', EPAYCLASSIC_PATH_FILE),
+            'americanexpress'=> plugins_url('images/american_express.svg', EPAYCLASSIC_PATH_FILE),
+            'dinersclub'     => plugins_url('images/diners_club.svg', EPAYCLASSIC_PATH_FILE),
+            'ideal'          => plugins_url('images/ideal.svg', EPAYCLASSIC_PATH_FILE),
+            'jcb'            => plugins_url('images/jcb.svg', EPAYCLASSIC_PATH_FILE),
+            'maestro'        => plugins_url('images/maestro.svg', EPAYCLASSIC_PATH_FILE),
+            'dankort'        => plugins_url('images/dankort.svg', EPAYCLASSIC_PATH_FILE),
+            'applepay'       => plugins_url('images/applepay.svg', EPAYCLASSIC_PATH_FILE),
+            'vippsmobilepay' => plugins_url('images/mobilepay.svg', EPAYCLASSIC_PATH_FILE),
+            'googlepay'      => plugins_url('images/googlepay.svg', EPAYCLASSIC_PATH_FILE),
+            'nowallet'       => plugins_url('images/applepay.svg', EPAYCLASSIC_PATH_FILE),
+        ];
+
+        if(isset($allicons[$name]))
+        {
+            return $allicons[$name];
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public static function get_card_name_by_type($name)
+    {
+        $name = str_replace('_', '', strtolower($name));
+
+        $allnames = [
+            'epay'           => "ePay",
+            'visa'           => "VISA",
+            'mastercard'     => "MASTERCARD",
+            'americanexpress'=> "American Express",
+            'dinersclub'     => "Diners Club",
+            'ideal'          => "iDeal",
+            'jcb'            => "JCB",
+            'maestro'        => "Maestro",
+            'dankort'        => "Dankort",
+            'applepay'       => "Apple Pay",
+            'vippsmobilepay' => "MobilePay",
+            'googlepay'      => "Google Pay",
+        ];
+
+        if(isset($allnames[$name]))
+        {
+            return $allnames[$name];
+        }
+        else
+        {
+            return false;
+        }
+    }
+
 	/**
 	 * Get Payment type name based on Card id
 	 *
@@ -1001,50 +1060,50 @@ class Epay_Payment_Helper {
 	 */
 	public static function get_cardtype_groupid_and_name( $card_type_id ) {
 		$card_type_array = array(
-			1  => array( 'Dankort', '1' ),
-			2  => array( 'Visa/Dankort', '1' ),
-			3  => array( 'Visa Electron', '3' ),
-			4  => array( 'Mastercard', '4' ),
-			5  => array( 'Mastercard', '4' ),
-			6  => array( 'Visa Electron', '3' ),
-			7  => array( 'JCB', '6' ),
-			8  => array( 'Diners Club', '8' ),
-			9  => array( 'Maestro', '7' ),
-			10 => array( 'American Express', '9' ),
-			11 => array( 'Unknown', '15' ),
-			12 => array( 'eDankort', '2' ),
-			13 => array( 'Diners Club', '8' ),
-			14 => array( 'American Express', '9' ),
-			15 => array( 'Maestro', '7' ),
-			16 => array( 'Forbrugsforeningen', '11' ),
-			17 => array( 'ewire', '10' ),
-			18 => array( 'Visa', '3' ),
-			19 => array( 'IKANO Kort', '15' ),
-			20 => array( 'Other', '15' ),
-			21 => array( 'Nordea e-betaling', '12' ),
-			22 => array( 'Danske Netbetalinger', '13' ),
-			23 => array( 'BG Netbetalinger', '15' ),
-			24 => array( 'LIC/Mastercard', '4' ),
-			25 => array( 'LIC/Mastercard', '4' ),
-			26 => array( 'PayPal', '14' ),
-			27 => array( 'MobilPenge', '16' ),
-			28 => array( 'Klarna', '17' ),
-			29 => array( 'Svea', '18' ),
-			30 => array( 'SEB Direktbetalning', '19' ),
-			31 => array( 'Nordea SE E-payment', '20' ),
-			32 => array( 'Handelsbanken SE Direktbetalningar', '21' ),
-			33 => array( 'Swedbank Direktbetalningar', '22' ),
-			34 => array( 'ViaBill', '23' ),
-			35 => array( 'Beeptify', '24' ),
-			36 => array( 'iDeal', '25' ),
-			37 => array( 'Oberthur', '26' ),
-			38 => array( '4T', '27' ),
-			39 => array( 'Brandts', '28' ),
-			40 => array( 'MobilePay', '29' ),
-			41 => array( 'Resurs', '30' ),
-			42 => array( 'Ekspres Bank', '31' ),
-			43 => array( 'Swipp', '32' ),
-			44 => array( 'Masterpass', '34' )
+			1  => array( 'Dankort', '1', 'dankort' ),
+			2  => array( 'Visa/Dankort', '1', 'dankort' ),
+			3  => array( 'Visa Electron', '3', 'visa' ),
+			4  => array( 'Mastercard', '4', 'mastercard' ),
+			5  => array( 'Mastercard', '4', 'mastercard' ),
+			6  => array( 'Visa Electron', '3', 'visa' ),
+			7  => array( 'JCB', '6', 'jcb' ),
+			8  => array( 'Diners Club', '8', 'dinersclub'),
+			9  => array( 'Maestro', '7', 'maestro' ),
+			10 => array( 'American Express', '9', 'americanexpress' ),
+			11 => array( 'Unknown', '15', false ),
+			12 => array( 'eDankort', '2', 'dankort' ),
+			13 => array( 'Diners Club', '8', 'dinersclub' ),
+			14 => array( 'American Express', '9', 'americanexpress' ),
+			15 => array( 'Maestro', '7', 'maestro' ),
+			16 => array( 'Forbrugsforeningen', '11', false ),
+			17 => array( 'ewire', '10'. false ),
+			18 => array( 'Visa', '3', 'visa' ),
+			19 => array( 'IKANO Kort', '15', false ),
+			20 => array( 'Other', '15', false ),
+			21 => array( 'Nordea e-betaling', '12', false ),
+			22 => array( 'Danske Netbetalinger', '13', false ),
+			23 => array( 'BG Netbetalinger', '15', false ),
+			24 => array( 'LIC/Mastercard', '4', 'mastercard' ),
+			25 => array( 'LIC/Mastercard', '4', 'mastercard' ),
+			26 => array( 'PayPal', '14', 'paypal' ),
+			27 => array( 'MobilPenge', '16', false ),
+			28 => array( 'Klarna', '17', 'klarna' ),
+			29 => array( 'Svea', '18', false ),
+			30 => array( 'SEB Direktbetalning', '19', false ),
+			31 => array( 'Nordea SE E-payment', '20', false ),
+			32 => array( 'Handelsbanken SE Direktbetalningar', '21', false ),
+			33 => array( 'Swedbank Direktbetalningar', '22', false ),
+			34 => array( 'ViaBill', '23', 'viabill' ),
+			35 => array( 'Beeptify', '24', false ),
+			36 => array( 'iDeal', '25', 'ideal' ),
+			37 => array( 'Oberthur', '26', false ),
+			38 => array( '4T', '27', false ),
+			39 => array( 'Brandts', '28', false ),
+			40 => array( 'MobilePay', '29', 'vippsmobilepay'),
+			41 => array( 'Resurs', '30', false ),
+			42 => array( 'Ekspres Bank', '31', false ),
+			43 => array( 'Swipp', '32', false ),
+			44 => array( 'Masterpass', '34', false )
 		);
 
 		if ( $card_type_id == null || ! key_exists( $card_type_id, $card_type_array ) ) {

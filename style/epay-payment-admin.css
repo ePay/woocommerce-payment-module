@@ -17,6 +17,8 @@
 
 .boclassic-paymenttype-img {
     float: right;
+    height:24px;
+    margin-left:5px;
 }
 
 .boclassic-info-overview {

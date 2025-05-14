@@ -52,6 +52,9 @@ With ePay Payment for WooCommerce, you are able to integrate the ePay payment wi
 
 == Changelog ==
 
+= 6.0.21
+* Creditcard icons in edit order
+
 = 6.0.20
 * Creditcard icons in checkout
 
