@@ -752,8 +752,9 @@ function init_epay_payment() {
 				$amount           = Epay_Payment_Helper::convert_price_to_minorunits( $amount, $minorunits, $this->roundingmode );
 				$renewal_order_id = $renewal_order->get_id();
 
-				$webservice         = new Epay_Payment_Soap( $this->remotepassword, true, $this->apikey, $this->posid );
+				$webservice         = new Epay_Payment_Soap( $this->remotepassword, true );
 				$authorize_response = $webservice->authorize( $this->merchant, $epay_subscription_id, $renewal_order_id, $amount, Epay_Payment_Helper::get_iso_code( $order_currency ), (bool) Epay_Payment_Helper::yes_no_to_int( $this->instantcapture ), $this->group, $this->authmail );
+
 				if ( $authorize_response->authorizeResult === false ) {
 					$error_message = '';
 					if ( $authorize_response->epayresponse != '-1' ) {
@@ -814,7 +815,7 @@ function init_epay_payment() {
 						return new WP_Error( 'epay_payment_error', $order_note );
 					}
 
-					$webservice                   = new Epay_Payment_Soap( $this->remotepassword, true, $this->apikey, $this->posid );
+					$webservice                   = new Epay_Payment_Soap( $this->remotepassword, true );
 					$delete_subscription_response = $webservice->delete_subscription( $this->merchant, $epay_subscription_id );
 					if ( $delete_subscription_response->deletesubscriptionResult === true ) {
 						$subscription->add_order_note( sprintf( __( 'Subscription successfully Cancelled. - ePay Payment Solutions Subscription Id: %s', 'epay-payment' ), $epay_subscription_id ) );
@@ -944,28 +945,7 @@ function init_epay_payment() {
 		 **/
 		public function epay_payment_callback() {
 
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                
-                $rawData = file_get_contents("php://input");
-                $data = json_decode($rawData, true);
-
-                $payment_type_map = array ( "Dankort"=>1, "Visa"=>3, "Mastercard"=>4, "JCB"=>6, "Maestro"=>7, "Diners Club"=>8, "American Express"=>9);
-
-                $params['txnid'] = $data['transaction']['id'];
-                $params['wcorderid'] = $data['transaction']['reference'];
-                if(isset($data['subscription']['id']))
-                {
-                    $params['subscriptionid'] = $data['subscription']['id'];
-                }
-                $params['paymenttype'] = $payment_type_map[$data['transaction']['paymentMethodSubType']];
-                $params['txnfee'] = 0; // $data['transaction'][''];
-
-                $this->md5key = null;
-            }
-            else
-            {
-			    $params        = stripslashes_deep( $_GET );
-            }
+			$params        = stripslashes_deep( $_GET );
  
 			$message       = '';
 			$order         = null;
@@ -1304,7 +1284,7 @@ function init_epay_payment() {
 				$remote_password = $this->remotepassword;
 			}
             
-            $webservice       = new Epay_Payment_Soap( $remote_password, false, $this->apikey, $this->posid );
+            $webservice       = new Epay_Payment_Soap( $remote_password, false );
 			$capture_response = $webservice->capture( $merchant_number, $transaction_id, $amount_in_minorunits );
 
 			if ( $capture_response->captureResult === true ) {
@@ -1356,7 +1336,7 @@ function init_epay_payment() {
 				$remote_password = $this->remotepassword;
 			}
 
-			$webservice      = new Epay_Payment_Soap( $remote_password, false, $this->apikey, $this->posid );
+			$webservice      = new Epay_Payment_Soap( $remote_password, false );
 			$refund_response = $webservice->refund( $merchant_number, $transaction_id, $amount_in_minorunits );
 			if ( $refund_response->creditResult === true ) {
 				do_action( 'epay_payment_after_refund', $order_id );
@@ -1394,7 +1374,7 @@ function init_epay_payment() {
 				$remote_password = $this->remotepassword;
 			}
 
-            $webservice      = new Epay_Payment_Soap( $remote_password, false, $this->apikey, $this->posid );
+            $webservice      = new Epay_Payment_Soap( $remote_password, false );
             $delete_response = $webservice->delete( $merchant_number, $transaction_id );
             if ( $delete_response->deleteResult === true ) {
                 do_action( 'epay_payment_after_delete', $order_id );
@@ -1525,7 +1505,7 @@ function init_epay_payment() {
 					$remote_password = $this->remotepassword;
 				}
 
-                $webservice               = new Epay_Payment_Soap( $remote_password, false, $this->apikey, $this->posid );
+                $webservice               = new Epay_Payment_Soap( $remote_password, false );
                 $get_transaction_response = $webservice->get_transaction( $merchant_number, $transaction_id );
                 if ( $get_transaction_response->gettransactionResult === false ) {
                     $html = __( 'Get Transaction action failed', 'epay-payment' );

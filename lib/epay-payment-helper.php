@@ -816,7 +816,7 @@ class Epay_Payment_Helper {
             'applepay'       => plugins_url('images/applepay.svg', EPAYCLASSIC_PATH_FILE),
             'vippsmobilepay' => plugins_url('images/mobilepay.svg', EPAYCLASSIC_PATH_FILE),
             'googlepay'      => plugins_url('images/googlepay.svg', EPAYCLASSIC_PATH_FILE),
-            'nowallet'       => plugins_url('images/applepay.svg', EPAYCLASSIC_PATH_FILE),
+            'nowallet'       => false,
         ];
 
         if(isset($allicons[$name]))
