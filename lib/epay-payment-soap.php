@@ -15,8 +15,6 @@
 class Epay_Payment_Soap {
 
     private $pwd = '';
-    private $apikey = false;
-    private $posid = false;
 	private $client = null;
 	private $isSubscription = false;
 	private $proxy;
@@ -29,8 +27,6 @@ class Epay_Payment_Soap {
 	 */
 	public function __construct( $pwd = '', $subscription = false) {
 		$this->pwd            = $pwd;
-        $this->apikey         = $apikey;
-        $this->posid          = $posid;
 		$this->isSubscription = $subscription;
 		$this->proxy          = new WP_HTTP_Proxy();
 		$options              = array();

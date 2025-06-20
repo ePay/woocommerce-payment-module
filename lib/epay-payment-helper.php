@@ -293,9 +293,16 @@ class Epay_Payment_Helper {
 	 *
 	 * @param WC_Order $order
 	 */
-	public static function get_accept_url( $order ) {
+    public static function get_accept_url( $order ) {
+        
+
 		if ( method_exists( $order, 'get_checkout_order_received_url' ) ) {
 			$acceptUrlRaw  = $order->get_checkout_order_received_url();
+
+            if ( ! preg_match( '#^https?://#i', $acceptUrlRaw ) ) {
+                $acceptUrlRaw = home_url($acceptUrlRaw);
+            }
+
 			$acceptUrlTemp = str_replace( '&amp;', '&', $acceptUrlRaw );
 			$acceptUrl     = str_replace( '&#038', '&', $acceptUrlTemp );
 
