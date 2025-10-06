@@ -1,17 +1,17 @@
 <?php
-class Epay_ApplePay extends subgate
+class GooglePay extends subgate
 {
     public function __construct()
     {
         parent::__construct();
 
-        $this->id = "epay_applepay";
+        $this->id = "epay_googlepay";
         $this->paymentcollection = 8;
-        $this->paymenttype = 35;
-		$this->icon = $this->plugin_url('images/applepay.svg');
+        $this->paymenttype = 36;
+		$this->icon = $this->plugin_url('images/googlepay.svg');
         // $this->enabled = "yes";
         
-        $this->method_title = "ePay - ApplePay";
+        $this->method_title = "ePay - GooglePay";
 
         $this->setup();
 

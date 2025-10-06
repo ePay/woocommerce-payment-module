@@ -19,7 +19,7 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH_FILE',  __FILE__ );
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.21' );
+define( 'EPAYCLASSIC_VERSION', '6.0.22' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -1758,7 +1758,7 @@ function init_epay_payment() {
                         'mastercard'            => 'Mastercard',
                         'mobilepay'             => 'MobilePay',
                         'applepay'             => 'Apple Pay',
-                        // 'googlepay'            => 'Google Pay',
+                        'googlepay'            => 'Google Pay',
                         'viabill'               => 'ViaBill',
                         'maestro'               => 'Maestro',
                         'jcb'                   => 'JCB',
