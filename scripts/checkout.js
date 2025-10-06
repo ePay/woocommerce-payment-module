@@ -1,4 +1,4 @@
-const gateways = [['Epay_Payment', 'epay_dk'], ['Epay_MobilePay', 'epay_mobilepay'], ['Epay_ApplePay', 'epay_applepay'], ['Epay_ViaBill', 'epay_viabill'], ['Epay_PayPal', 'epay_paypal']];
+const gateways = [['Epay_Payment', 'epay_dk'], ['Epay_MobilePay', 'epay_mobilepay'], ['Epay_ApplePay', 'epay_applepay'], ['Epay_ViaBill', 'epay_viabill'], ['Epay_PayPal', 'epay_paypal'], ['Epay_GooglePay', 'epay_googlepay']];
 
 gateways.forEach(gateway => {
 
