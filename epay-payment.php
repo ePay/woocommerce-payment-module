@@ -3,7 +3,7 @@
  * Plugin Name: ePay Payment Solutions
  * Plugin URI: https://docs.epay.dk/payment-modules/woocommerce/installation
  * Description: ePay Payment gateway for WooCommerce
- * Version: 6.0.21
+ * Version: 6.0.23
  * Author: ePay Payment Solutions
  * Author URI: https://www.epay.dk
  * License:           GPL v2 or later
@@ -263,7 +263,7 @@ function init_epay_payment() {
 		 * Enqueue Admin Styles and Scripts
 		 */
 		public function enqueue_wc_epay_payment_admin_styles_and_scripts() {
-			wp_register_style( 'epay_payment_admin_style', plugins_url( 'style/epay-payment-admin.css', __FILE__ ), array(), 1 );
+			wp_register_style( 'epay_payment_admin_style', plugins_url( 'style/epay-payment-admin.css?v=1', __FILE__ ), array(), 1 );
 			wp_enqueue_style( 'epay_payment_admin_style' );
 
 			// Fix for load of Jquery time!
@@ -275,7 +275,7 @@ function init_epay_payment() {
 		 * Enqueue Frontend Styles and Scripts
 		 */
 		public function enqueue_wc_epay_payment_front_styles() {
-			wp_register_style( 'epay_payment_front_style', plugins_url( 'style/epay-payment-front.css', __FILE__ ), array(), 1 );
+			wp_register_style( 'epay_payment_front_style', plugins_url( 'style/epay-payment-front.css?v=1', __FILE__ ), array(), 1 );
 			wp_enqueue_style( 'epay_payment_front_style' );
 		}
 
