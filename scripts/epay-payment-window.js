@@ -40,8 +40,6 @@ function openPaymentWindow() {
     }
 }
 
-document.addEventListener('readystatechange', function (event) {
-    if (event.target.readyState === "complete") {
-        timerOpenWindow = setInterval("openPaymentWindow()", 600);
-    }
+document.addEventListener('DOMContentLoaded', function () {
+    timerOpenWindow = setInterval(openPaymentWindow, 1000);
 });

@@ -19,7 +19,7 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 define( 'EPAYCLASSIC_PATH_FILE',  __FILE__ );
 define( 'EPAYCLASSIC_PATH', dirname( __FILE__ ) );
-define( 'EPAYCLASSIC_VERSION', '6.0.22' );
+define( 'EPAYCLASSIC_VERSION', '6.0.23' );
 
 add_action( 'plugins_loaded', 'init_epay_payment', 0 );
 
@@ -33,10 +33,10 @@ function init_epay_payment() {
 		return;
 	}
 
-	include( EPAYCLASSIC_PATH . '/lib/epay-payment-soap.php' );
-	include( EPAYCLASSIC_PATH . '/lib/epay-payment-api.php' );
-	include( EPAYCLASSIC_PATH . '/lib/epay-payment-helper.php' );
-	include( EPAYCLASSIC_PATH . '/lib/epay-payment-log.php' );
+	include_once( EPAYCLASSIC_PATH . '/lib/epay-payment-soap.php' );
+	include_once( EPAYCLASSIC_PATH . '/lib/epay-payment-api.php' );
+	include_once( EPAYCLASSIC_PATH . '/lib/epay-payment-helper.php' );
+	include_once( EPAYCLASSIC_PATH . '/lib/epay-payment-log.php' );
 
 	/**
 	 * Gateway class
@@ -890,7 +890,6 @@ function init_epay_payment() {
                     $epay_args['minimumuserage'] = $minimumuserage;
                     $epay_args['ageverificationcountry'] = $order->get_shipping_country();
                 }
-                
             }
         
             if ( ! $is_request_to_change_payment_method ) {
